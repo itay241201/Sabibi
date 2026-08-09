@@ -61,7 +61,11 @@
             cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px;
         }
 
-        /* Quick Mood Pickers */
+        /* AI Assistant Input Box */
+        .ai-box { display: flex; gap: 6px; margin-bottom: 14px; background: var(--control-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 6px; }
+        .ai-input { flex: 1; border: none; background: transparent; padding: 6px 10px; color: var(--text-main); font-size: 13px; outline: none; }
+        .ai-btn { background: var(--primary); border: none; color: white; padding: 8px 14px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 12px; }
+
         .mood-container { display: flex; gap: 6px; margin-bottom: 16px; }
         .mood-btn {
             flex: 1; padding: 8px 4px; border-radius: 12px; background: var(--control-bg);
@@ -109,8 +113,17 @@
         .btn-nav { flex: 2; padding: 10px; background: var(--primary); color: white; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 800; font-size: 13px; }
         .btn-share { flex: 1; padding: 10px; background: #22c55e; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; }
 
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); color: var(--text-main); padding: 24px; border-radius: 20px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(6px); align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-bg); color: var(--text-main); padding: 24px; border-radius: 24px; width: 90%; max-width: 440px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); position: relative; }
+
+        .wheel-container { position: relative; width: 280px; height: 280px; margin: 15px auto; }
+        #wheelCanvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .wheel-arrow { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 22px solid #ef4444; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+
+        /* Match Mode Buttons */
+        .match-actions { display: flex; gap: 12px; margin-top: 15px; }
+        .match-btn-dislike { flex: 1; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; }
+        .match-btn-like { flex: 1; padding: 12px; background: #10b981; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; }
 
         @media (max-width: 768px) {
             body { flex-direction: column-reverse; }
@@ -134,7 +147,12 @@
             </div>
         </div>
 
-        <!-- Quick Mood Pickers -->
+        <!-- AI Assistant -->
+        <div class="ai-box">
+            <input type="text" id="aiInput" class="ai-input" placeholder="🤖 עוזר AI: מה בא לך לאכול/לראות?">
+            <button class="ai-btn" onclick="askAI()">חפש</button>
+        </div>
+
         <div class="mood-container">
             <button class="mood-btn" onclick="quickMood('cafe')">🥐 קפה וספונטני</button>
             <button class="mood-btn" onclick="quickMood('meat')">🥩 דייט לילי</button>
@@ -172,7 +190,12 @@
         </div>
 
         <button class="btn-main" onclick="searchRestaurants()">חפש בסביבה</button>
-        <button class="btn-secondary" style="width:100%; margin-top:8px; padding:12px;" onclick="pickRandomFromAll()">🎲 תגריל לי מקום!</button>
+        
+        <div style="display:flex; gap:6px; margin-top:8px;">
+            <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color:white; border:none;" onclick="openWheelModal()">🎡 גלגל המזל</button>
+            <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #ec4899, #be185d); color:white; border:none;" onclick="startMatchMode()">👥 מצב Match</button>
+        </div>
+
         <button class="btn-secondary" style="width:100%; margin-top:6px; padding:10px; background:#6366f1; color:white; border:none;" onclick="showFavorites()">❤️ המועדפים שלי (<span id="favCount">0</span>)</button>
 
         <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border-color);">
@@ -184,11 +207,29 @@
 
     <div id="map"></div>
 
+    <!-- Modals -->
     <div id="randomModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-top:0; color: var(--primary);">🎉 המקום הנבחר עבורך!</h2>
-            <div id="modalBody"></div>
-            <button class="btn-main" style="margin-top: 15px; background: #64748b;" onclick="closeModal()">סגור</button>
+            <h2 style="margin-top:0; color: var(--primary); font-size: 22px;">🎡 גלגל המזל של סביבי</h2>
+            <div class="wheel-container">
+                <div class="wheel-arrow"></div>
+                <canvas id="wheelCanvas" width="300" height="300"></canvas>
+            </div>
+            <button id="spinBtn" class="btn-main" onclick="spinWheel()">סובב את הגלגל! 🚀</button>
+            <div id="modalBody" style="margin-top: 15px;"></div>
+            <button class="btn-secondary" style="margin-top: 12px; width: 100%;" onclick="closeModal()">סגור</button>
+        </div>
+    </div>
+
+    <div id="matchModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-top:0; color: #ec4899; font-size: 22px;">👥 Match קבוצתי - מה אוכלים?</h2>
+            <div id="matchCardBody" style="margin-top: 15px;"></div>
+            <div id="matchActions" class="match-actions">
+                <button class="match-btn-dislike" onclick="voteMatch(false)">👎 לא בא</button>
+                <button class="match-btn-like" onclick="voteMatch(true)">👍 בא לי!</button>
+            </div>
+            <button class="btn-secondary" style="margin-top: 12px; width: 100%;" onclick="closeMatchModal()">סגור</button>
         </div>
     </div>
 
@@ -215,9 +256,7 @@
             bar: '🍹', hotel: '🏨', b_and_b: '🏡', attraction: '🎡', restaurant: '🍽️'
         };
 
-        function updateFavCount() {
-            document.getElementById('favCount').innerText = favorites.length;
-        }
+        function updateFavCount() { document.getElementById('favCount').innerText = favorites.length; }
         updateFavCount();
 
         function createEmojiIcon(emoji) {
@@ -236,13 +275,8 @@
             document.getElementById('themeIcon').innerText = isDark ? '☀️' : '🌙';
             document.getElementById('themeText').innerText = isDark ? 'בהיר' : 'כהה';
 
-            if (isDark) {
-                map.removeLayer(lightTile);
-                darkTile.addTo(map);
-            } else {
-                map.removeLayer(darkTile);
-                lightTile.addTo(map);
-            }
+            if (isDark) { map.removeLayer(lightTile); darkTile.addTo(map); }
+            else { map.removeLayer(darkTile); lightTile.addTo(map); }
         }
 
         const pillsContainer = document.getElementById('pillsContainer');
@@ -293,11 +327,8 @@
         function toggleFavorite(placeJson) {
             const place = JSON.parse(decodeURIComponent(placeJson));
             const idx = favorites.findIndex(f => f.id === place.id);
-            if (idx >= 0) {
-                favorites.splice(idx, 1);
-            } else {
-                favorites.push(place);
-            }
+            if (idx >= 0) { favorites.splice(idx, 1); }
+            else { favorites.push(place); }
             localStorage.setItem('sabibi_favs', JSON.stringify(favorites));
             updateFavCount();
             searchRestaurants();
@@ -306,6 +337,23 @@
         function shareWhatsApp(name, mapsUrl) {
             const text = encodeURIComponent(`היי! מצאתי ב-Sabibi את "${name}":\n${mapsUrl}`);
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+        }
+
+        /* AI Assistant Engine */
+        function askAI() {
+            const query = document.getElementById('aiInput').value.toLowerCase();
+            if (!query) return;
+
+            if (query.includes('כשר') || query.includes('כשרות')) selectedGenre = 'kosher';
+            else if (query.includes('קפה') || query.includes('מאפה')) selectedGenre = 'cafe';
+            else if (query.includes('בשר') || query.includes('סטייק')) selectedGenre = 'meat';
+            else if (query.includes('פיצה') || query.includes('איטלקי')) selectedGenre = 'italian';
+            else if (query.includes('סושי') || query.includes('אסיאתי')) selectedGenre = 'sushi';
+            else if (query.includes('מלון') || query.includes('צימר')) selectedGenre = 'hotel';
+            else if (query.includes('בר') || query.includes('אלכוהול')) selectedGenre = 'bar';
+
+            const pill = Array.from(document.querySelectorAll('.pill')).find(p => p.getAttribute('onclick').includes(`'${selectedGenre}'`));
+            selectCategory(selectedGenre, pill);
         }
 
         async function fetchPlaces() {
@@ -405,31 +453,143 @@
             });
         }
 
-        async function pickRandomFromAll() {
-            const modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = '<p style="color: var(--primary); font-weight:700;">מגריל מקום ברדיוס...</p>';
+        /* Wheel Mechanics */
+        let wheelItems = [];
+        let startAngle = 0;
+        let spinTimeout = null;
+        let spinAngleStart = 10;
+        let spinTime = 0;
+        let spinTimeTotal = 0;
+        const colors = ['#00c2e8', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
+
+        async function openWheelModal() {
+            document.getElementById('modalBody').innerHTML = '';
+            document.getElementById('spinBtn').style.display = 'block';
             document.getElementById('randomModal').style.display = 'flex';
 
-            try {
-                if (fetchedPlacesList.length === 0) {
-                    fetchedPlacesList = await fetchPlaces();
-                }
+            if (fetchedPlacesList.length === 0) fetchedPlacesList = await fetchPlaces();
+            if (fetchedPlacesList.length === 0) {
+                document.getElementById('modalBody').innerHTML = '<p style="color: #ef4444;">לא נמצאו מקומות ברדיוס להגרלה.</p>';
+                document.getElementById('spinBtn').style.display = 'none';
+                return;
+            }
 
-                if (fetchedPlacesList.length === 0) {
-                    modalBody.innerHTML = '<p style="color: #ef4444;">לא נמצאו תוצאות ברדיוס להגרלה.</p>';
-                    return;
-                }
+            wheelItems = fetchedPlacesList.slice(0, 6);
+            drawWheel();
+        }
 
-                const randomPlace = fetchedPlacesList[Math.floor(Math.random() * fetchedPlacesList.length)];
-                modalBody.innerHTML = renderCardHTML(randomPlace);
-            } catch (error) {
-                modalBody.innerHTML = '<p style="color: #ef4444;">שגיאה בתקשורת עם השרת.</p>';
+        function drawWheel() {
+            const canvas = document.getElementById('wheelCanvas');
+            if (!canvas.getContext) return;
+            const ctx = canvas.getContext('2d');
+            const outsideRadius = 135, textRadius = 90, insideRadius = 25;
+
+            ctx.clearRect(0,0,300,300);
+            const arc = Math.PI / (wheelItems.length / 2);
+
+            for(let i = 0; i < wheelItems.length; i++) {
+                const angle = startAngle + i * arc;
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.beginPath();
+                ctx.arc(150, 150, outsideRadius, angle, angle + arc, false);
+                ctx.arc(150, 150, insideRadius, angle + arc, angle, true);
+                ctx.fill();
+
+                ctx.save();
+                ctx.fillStyle = "white";
+                ctx.font = "bold 12px Heebo";
+                ctx.translate(150 + Math.cos(angle + arc / 2) * textRadius, 150 + Math.sin(angle + arc / 2) * textRadius);
+                ctx.rotate(angle + arc / 2 + Math.PI / 2);
+                const text = wheelItems[i].name.length > 12 ? wheelItems[i].name.substring(0, 10) + '..' : wheelItems[i].name;
+                ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
+                ctx.restore();
             }
         }
 
-        function closeModal() {
-            document.getElementById('randomModal').style.display = 'none';
+        function spinWheel() {
+            spinAngleStart = Math.random() * 10 + 10;
+            spinTime = 0;
+            spinTimeTotal = Math.random() * 3000 + 4000;
+            rotateWheel();
         }
+
+        function rotateWheel() {
+            spinTime += 30;
+            if(spinTime >= spinTimeTotal) { stopRotateWheel(); return; }
+            const spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
+            startAngle += (spinAngle * Math.PI / 180);
+            drawWheel();
+            spinTimeout = setTimeout(rotateWheel, 30);
+        }
+
+        function stopRotateWheel() {
+            clearTimeout(spinTimeout);
+            const degrees = startAngle * 180 / Math.PI + 90;
+            const arclen = 360 / wheelItems.length;
+            const index = Math.floor((360 - degrees % 360) / arclen);
+            const winner = wheelItems[(index + wheelItems.length) % wheelItems.length];
+            
+            document.getElementById('spinBtn').style.display = 'none';
+            document.getElementById('modalBody').innerHTML = `
+                <div style="margin-top: 10px;">
+                    <p style="color: #10b981; font-weight: 800; font-size: 16px; margin-bottom: 8px;">🎉 המזל בחר עבורך:</p>
+                    ${renderCardHTML(winner)}
+                </div>
+            `;
+        }
+
+        function easeOut(t, b, c, d) {
+            const ts = (t/=d)*t, tc = ts*t;
+            return b+c*(tc + -3*ts + 3*t);
+        }
+
+        /* Match Mode Logic */
+        let matchIndex = 0;
+        let matchPlaces = [];
+        let likedPlaces = [];
+
+        async function startMatchMode() {
+            if (fetchedPlacesList.length === 0) fetchedPlacesList = await fetchPlaces();
+            if (fetchedPlacesList.length === 0) return alert('אין מקומות זמינים ברדיוס ל-Match.');
+
+            matchPlaces = fetchedPlacesList.slice(0, 5);
+            matchIndex = 0;
+            likedPlaces = [];
+
+            document.getElementById('matchActions').style.display = 'flex';
+            document.getElementById('matchModal').style.display = 'flex';
+            renderMatchCard();
+        }
+
+        function renderMatchCard() {
+            const body = document.getElementById('matchCardBody');
+            if (matchIndex >= matchPlaces.length) {
+                document.getElementById('matchActions').style.display = 'none';
+                if (likedPlaces.length > 0) {
+                    const topMatch = likedPlaces[0];
+                    body.innerHTML = `
+                        <h3 style="color:#10b981;">🎉 יש Match קבוצתי!</h3>
+                        <p style="font-size:14px; color:var(--text-sub);">המקום שכולם הסכימו עליו:</p>
+                        ${renderCardHTML(topMatch)}
+                    `;
+                } else {
+                    body.innerHTML = '<p style="color:var(--text-sub);">לא נמצאה הסכמה בסיבוב הזה 😅 כדאי להגריל בגלגל!</p>';
+                }
+                return;
+            }
+
+            const place = matchPlaces[matchIndex];
+            body.innerHTML = renderCardHTML(place);
+        }
+
+        function voteMatch(isLike) {
+            if (isLike) likedPlaces.push(matchPlaces[matchIndex]);
+            matchIndex++;
+            renderMatchCard();
+        }
+
+        function closeModal() { document.getElementById('randomModal').style.display = 'none'; }
+        function closeMatchModal() { document.getElementById('matchModal').style.display = 'none'; }
 
         setTimeout(() => { map.invalidateSize(); }, 300);
     </script>
