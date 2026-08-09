@@ -9,13 +9,18 @@ CORS(app)
 
 GOOGLE_API_KEY = "AIzaSyDi4k9JXzYIWgmG5VE6F-axQ6-TJY5fG6M"
 
+# מילון סגנונות מורחב - כולל מסעדות ומלונות
 GENRE_MAP = {
-    "restaurant": "restaurant",
-    "italian": "italian restaurant pizza",
-    "sushi": "sushi asian restaurant",
-    "meat": "steakhouse meat restaurant",
-    "vegan": "vegan vegetarian restaurant",
-    "cafe": "cafe coffee shop"
+    # מסעדות
+    "restaurant": {"type": "restaurant", "keyword": "restaurant"},
+    "italian": {"type": "restaurant", "keyword": "italian restaurant pizza"},
+    "sushi": {"type": "restaurant", "keyword": "sushi asian restaurant"},
+    "meat": {"type": "restaurant", "keyword": "steakhouse meat restaurant"},
+    "vegan": {"type": "restaurant", "keyword": "vegan vegetarian restaurant"},
+    "cafe": {"type": "cafe", "keyword": "cafe coffee shop"},
+    # מלונות ומקומות לינה
+    "hotel": {"type": "lodging", "keyword": "hotel resort boutique hotel"},
+    "b_and_b": {"type": "lodging", "keyword": "zimer bed and breakfast guest house"}
 }
 
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -28,7 +33,6 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
 
-# הגשת עמוד הבית הראשי
 @app.route('/')
 def serve_index():
     return send_from_directory('.', 'index.html')
@@ -43,20 +47,18 @@ def search_places():
     min_rating = float(data.get('min_rating', 0))
     open_now = data.get('open_now', False)
 
-    keyword = GENRE_MAP.get(genre, "restaurant")
+    genre_info = GENRE_MAP.get(genre, {"type": "restaurant", "keyword": "restaurant"})
 
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
     params = {
         "location": f"{center_lat},{center_lng}",
         "radius": max_radius,
-        "type": "restaurant",
+        "type": genre_info["type"],
+        "keyword": genre_info["keyword"],
         "key": GOOGLE_API_KEY
     }
-
-    if genre != "restaurant":
-        params["keyword"] = keyword
         
-    if open_now:
+    if open_now and genre_info["type"] == "restaurant":
         params["opennow"] = "true"
 
     try:
@@ -85,6 +87,7 @@ def search_places():
             if google_rating >= min_rating:
                 place_id = place.get("place_id")
                 
+                # חישוב מדד סביבי (משוכלל)
                 base_score = google_rating * 16
 
                 if user_ratings_total >= 2500:

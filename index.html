@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sabibi 📍 סביבי</title>
+    <title>Sabibi 📍 סביבי - מסעדות ומלונות בסביבה</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -14,7 +14,6 @@
         html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background: #eef2f5; }
         body { display: flex; flex-direction: row; }
 
-        /* Desktop Sidebar */
         #sidebar {
             width: 380px; min-width: 380px; padding: 24px;
             background: rgba(255, 255, 255, 0.95);
@@ -79,7 +78,6 @@
             background: white; padding: 24px; border-radius: 16px; width: 90%; max-width: 420px; text-align: center;
         }
 
-        /* Mobile Bottom-Sheet Adaptation */
         @media (max-width: 768px) {
             body { flex-direction: column-reverse; }
             #map { height: 100vh; position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
@@ -110,19 +108,25 @@
         <button class="btn-location" onclick="locateMe()">🎯 המיקום הנוכחי שלי</button>
 
         <div class="form-group">
-            <label>רדיוס חיפוש: <span id="radiusVal">1000 מטר</span></label>
-            <input type="range" id="radiusSlider" min="200" max="10000" step="100" value="1000">
+            <label>רדיוס חיפוש: <span id="radiusVal">2000 מטר</span></label>
+            <input type="range" id="radiusSlider" min="200" max="20000" step="200" value="2000">
         </div>
 
         <div class="form-group">
-            <label>סגנון מסעדה:</label>
+            <label>מה מחפשים בסביבה?</label>
             <select id="genreSelect">
-                <option value="restaurant">הכל 🍽️</option>
-                <option value="italian">איטלקי / פיצה 🍕</option>
-                <option value="sushi">אסייתי / סושי 🍣</option>
-                <option value="meat">בשרים 🥩</option>
-                <option value="vegan">טבעוני 🥗</option>
-                <option value="cafe">בית קפה ☕</option>
+                <optgroup label="אוכל ובילוי 🍽️">
+                    <option value="restaurant">כל המסעדות 🍽️</option>
+                    <option value="italian">איטלקי / פיצה 🍕</option>
+                    <option value="sushi">אסייתי / סושי 🍣</option>
+                    <option value="meat">בשרים 🥩</option>
+                    <option value="vegan">טבעוני 🥗</option>
+                    <option value="cafe">בית קפה ☕</option>
+                </optgroup>
+                <optgroup label="לינה ואירוח 🏨">
+                    <option value="hotel">מלונות וריזורטים 🏨</option>
+                    <option value="b_and_b">צימרים וחדרי אירוח 🏡</option>
+                </optgroup>
             </select>
         </div>
 
@@ -136,7 +140,7 @@
             <input type="checkbox" id="openNowCheck">
         </div>
 
-        <button class="btn-primary" onclick="searchRestaurants()">חפש מסעדות בסביבה</button>
+        <button class="btn-primary" onclick="searchRestaurants()">חפש בסביבה</button>
         <button class="btn-random" onclick="pickRandomFromAll()">🎲 רעב ולא החלטי? תגריל לי מקום!</button>
 
         <hr style="margin: 20px 0; border: none; border-top: 1px solid #e2e8f0;">
@@ -167,12 +171,13 @@
 
         L.control.zoom({ position: 'topleft' }).addTo(map);
 
-        let radius = 1000;
+        let radius = 2000;
         let restaurantMarkers = [];
         let currentPlaces = [];
 
         const icons = {
-            italian: '🍕', sushi: '🍣', meat: '🥩', vegan: '🥗', cafe: '☕', restaurant: '🍽️'
+            italian: '🍕', sushi: '🍣', meat: '🥩', vegan: '🥗', cafe: '☕',
+            hotel: '🏨', b_and_b: '🏡', restaurant: '🍽️'
         };
 
         function createEmojiIcon(emoji) {
@@ -205,7 +210,7 @@
                     const userLng = position.coords.longitude;
                     const userLatLng = [userLat, userLng];
 
-                    map.setView(userLatLng, 15);
+                    map.setView(userLatLng, 14);
                     updateCircleLocation(userLatLng);
                     searchRestaurants();
                 },
@@ -236,7 +241,8 @@
             const minRating = document.getElementById('ratingSlider').value;
             const openNow = document.getElementById('openNowCheck').checked;
 
-const response = await fetch('/api/search', {                method: 'POST',
+            const response = await fetch('/api/search', {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     lat: pos.lat, lng: pos.lng, radius: radius,
@@ -251,20 +257,20 @@ const response = await fetch('/api/search', {                method: 'POST',
         async function searchRestaurants() {
             const resultsDiv = document.getElementById('results');
             clearRestaurantMarkers();
-            resultsDiv.innerHTML = '<p style="color: #2563eb; font-weight: 600; text-align: center;">מחפש מסעדות ברדיוס המדויק...</p>';
+            resultsDiv.innerHTML = '<p style="color: #2563eb; font-weight: 600; text-align: center;">מחפש בסביבה...</p>';
 
             try {
                 currentPlaces = await fetchPlaces();
 
                 if (currentPlaces.length > 0) {
-                    resultsDiv.innerHTML = `<h3 style="font-size:15px; color:#334155;">נמצאו ${currentPlaces.length} מסעדות ברדיוס:</h3>`;
+                    resultsDiv.innerHTML = `<h3 style="font-size:15px; color:#334155;">נמצאו ${currentPlaces.length} תוצאות ברדיוס:</h3>`;
 
                     currentPlaces.forEach(place => {
                         const emoji = icons[place.genre] || icons.restaurant;
                         
                         const resMarker = L.marker([place.lat, place.lng], { icon: createEmojiIcon(emoji) })
                             .addTo(map)
-                            .bindPopup(`<b>${place.name}</b><br>💰 מחיר: ${place.price_display}<br>📏 מרחק: ${place.distance} מטרים<br>🏆 מדד סביבי: ${place.combined_score}/100`);
+                            .bindPopup(`<b>${place.name}</b><br>💰 רמת מחיר: ${place.price_display}<br>📏 מרחק: ${place.distance} מטרים<br>🏆 מדד סביבי: ${place.combined_score}/100`);
                         restaurantMarkers.push(resMarker);
 
                         resultsDiv.innerHTML += `
@@ -282,23 +288,24 @@ const response = await fetch('/api/search', {                method: 'POST',
                         `;
                     });
                 } else {
-                    resultsDiv.innerHTML = '<p style="color: #ef4444; text-align: center;">לא נמצאו מסעדות ברדיוס המדויק הזה.</p>';
+                    resultsDiv.innerHTML = '<p style="color: #ef4444; text-align: center;">לא נמצאו תוצאות ברדיוס הזה.</p>';
                 }
             } catch (error) {
-                resultsDiv.innerHTML = '<p style="color: #ef4444; text-align: center;">שגיאה בתקשורת עם השרת. ודא ש-app.py רץ!</p>';
+                resultsDiv.innerHTML = '<p style="color: #ef4444; text-align: center;">שגיאה בתקשורת עם השרת.</p>';
             }
         }
 
         async function pickRandomFromAll() {
             const modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = '<p style="color: #6d28d9; font-weight:600;">מגריל מסעדה מכל הסגנונות ברדיוס...</p>';
+            modalBody.innerHTML = '<p style="color: #6d28d9; font-weight:600;">מגריל מקום ברדיוס...</p>';
             document.getElementById('randomModal').style.display = 'flex';
 
             try {
-                const allPlaces = await fetchPlaces("restaurant");
+                const currentGenre = document.getElementById('genreSelect').value;
+                const allPlaces = await fetchPlaces(currentGenre);
 
                 if (allPlaces.length === 0) {
-                    modalBody.innerHTML = '<p style="color: #ef4444;">לא נמצאו מסעדות ברדיוס הזה להגרלה.</p>';
+                    modalBody.innerHTML = '<p style="color: #ef4444;">לא נמצאו תוצאות ברדיוס הזה להגרלה.</p>';
                     return;
                 }
 
