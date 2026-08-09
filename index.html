@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
@@ -61,11 +62,6 @@
             cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px;
         }
 
-        /* AI Assistant Input Box */
-        .ai-box { display: flex; gap: 6px; margin-bottom: 14px; background: var(--control-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 6px; }
-        .ai-input { flex: 1; border: none; background: transparent; padding: 6px 10px; color: var(--text-main); font-size: 13px; outline: none; }
-        .ai-btn { background: var(--primary); border: none; color: white; padding: 8px 14px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 12px; }
-
         .mood-container { display: flex; gap: 6px; margin-bottom: 16px; }
         .mood-btn {
             flex: 1; padding: 8px 4px; border-radius: 12px; background: var(--control-bg);
@@ -95,32 +91,31 @@
         .place-card { background: var(--card-bg); border-radius: var(--border-radius); padding: 0; margin-bottom: 20px; box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.2s ease; position: relative; }
         .place-card:hover { transform: translateY(-2px); }
 
-        .img-container { width: 100%; height: 160px; background: #334155; position: relative; }
+        .img-container { width: 100%; height: 150px; background: #334155; position: relative; }
         .place-img { width: 100%; height: 100%; object-fit: cover; }
 
         .fav-btn { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
         .badge-score { position: absolute; bottom: 12px; right: 12px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 4px; }
 
-        .card-body { padding: 16px; }
-        .place-title { font-size: 18px; font-weight: 800; margin: 0 0 4px 0; color: var(--text-main); }
-        .place-subtitle { font-size: 13px; color: var(--text-sub); margin: 0 0 12px 0; }
+        .card-body { padding: 14px; }
+        .place-title { font-size: 17px; font-weight: 800; margin: 0 0 4px 0; color: var(--text-main); }
+        .place-subtitle { font-size: 12px; color: var(--text-sub); margin: 0 0 10px 0; }
 
         .meta-row { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--text-sub); flex-wrap: wrap; }
         .meta-item { display: flex; align-items: center; gap: 4px; background: var(--control-bg); padding: 4px 8px; border-radius: 8px; }
 
-        .card-actions { display: flex; gap: 8px; margin-top: 14px; }
+        .card-actions { display: flex; gap: 8px; margin-top: 12px; }
         .btn-nav { flex: 2; padding: 10px; background: var(--primary); color: white; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 800; font-size: 13px; }
         .btn-share { flex: 1; padding: 10px; background: #22c55e; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; }
 
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(6px); align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); color: var(--text-main); padding: 24px; border-radius: 24px; width: 90%; max-width: 440px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); position: relative; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 16px; }
+        .modal-content { background: var(--card-bg); color: var(--text-main); padding: 20px; border-radius: 24px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); position: relative; }
+        
+        .wheel-container { position: relative; width: 220px; height: 220px; margin: 10px auto; }
+        #wheelCanvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+        .wheel-arrow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 20px solid #ef4444; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
 
-        .wheel-container { position: relative; width: 280px; height: 280px; margin: 15px auto; }
-        #wheelCanvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
-        .wheel-arrow { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 22px solid #ef4444; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
-
-        /* Match Mode Buttons */
         .match-actions { display: flex; gap: 12px; margin-top: 15px; }
         .match-btn-dislike { flex: 1; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; }
         .match-btn-like { flex: 1; padding: 12px; background: #10b981; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; }
@@ -145,12 +140,6 @@
                 </button>
                 <button class="btn-secondary" onclick="locateMe()">🎯 המיקום שלי</button>
             </div>
-        </div>
-
-        <!-- AI Assistant -->
-        <div class="ai-box">
-            <input type="text" id="aiInput" class="ai-input" placeholder="🤖 עוזר AI: מה בא לך לאכול/לראות?">
-            <button class="ai-btn" onclick="askAI()">חפש</button>
         </div>
 
         <div class="mood-container">
@@ -193,7 +182,7 @@
         
         <div style="display:flex; gap:6px; margin-top:8px;">
             <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color:white; border:none;" onclick="openWheelModal()">🎡 גלגל המזל</button>
-            <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #ec4899, #be185d); color:white; border:none;" onclick="startMatchMode()">👥 מצב Match</button>
+            <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #ec4899, #be185d); color:white; border:none;" onclick="setupMatchGroup()">👥 מצב Match</button>
         </div>
 
         <button class="btn-secondary" style="width:100%; margin-top:6px; padding:10px; background:#6366f1; color:white; border:none;" onclick="showFavorites()">❤️ המועדפים שלי (<span id="favCount">0</span>)</button>
@@ -210,25 +199,27 @@
     <!-- Modals -->
     <div id="randomModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-top:0; color: var(--primary); font-size: 22px;">🎡 גלגל המזל של סביבי</h2>
+            <h2 style="margin-top:0; color: var(--primary); font-size: 20px;">🎡 גלגל המזל של סביבי</h2>
             <div class="wheel-container">
                 <div class="wheel-arrow"></div>
-                <canvas id="wheelCanvas" width="300" height="300"></canvas>
+                <canvas id="wheelCanvas" width="220" height="220"></canvas>
             </div>
-            <button id="spinBtn" class="btn-main" onclick="spinWheel()">סובב את הגלגל! 🚀</button>
-            <div id="modalBody" style="margin-top: 15px;"></div>
-            <button class="btn-secondary" style="margin-top: 12px; width: 100%;" onclick="closeModal()">סגור</button>
+            <button id="spinBtn" class="btn-main" style="margin-top: 5px;" onclick="spinWheel()">סובב את הגלגל! 🚀</button>
+            <div id="modalBody" style="margin-top: 10px;"></div>
+            <button class="btn-secondary" style="margin-top: 10px; width: 100%;" onclick="closeModal()">סגור</button>
         </div>
     </div>
 
     <div id="matchModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-top:0; color: #ec4899; font-size: 22px;">👥 Match קבוצתי - מה אוכלים?</h2>
-            <div id="matchCardBody" style="margin-top: 15px;"></div>
+            <h2 style="margin-top:0; color: #ec4899; font-size: 20px;">👥 Match קבוצתי</h2>
+            <p id="matchProgress" style="font-size:12px; font-weight:800; color:var(--primary); margin:0 0 10px 0;"></p>
+            <div id="matchCardBody" style="margin-top: 10px;"></div>
             <div id="matchActions" class="match-actions">
                 <button class="match-btn-dislike" onclick="voteMatch(false)">👎 לא בא</button>
                 <button class="match-btn-like" onclick="voteMatch(true)">👍 בא לי!</button>
             </div>
+            <button id="nextUserBtn" class="btn-main" style="display:none; margin-top:15px; background:#ec4899;" onclick="startNextUserTurn()">העבר למשתתף הבא 📱➔</button>
             <button class="btn-secondary" style="margin-top: 12px; width: 100%;" onclick="closeMatchModal()">סגור</button>
         </div>
     </div>
@@ -337,23 +328,6 @@
         function shareWhatsApp(name, mapsUrl) {
             const text = encodeURIComponent(`היי! מצאתי ב-Sabibi את "${name}":\n${mapsUrl}`);
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-        }
-
-        /* AI Assistant Engine */
-        function askAI() {
-            const query = document.getElementById('aiInput').value.toLowerCase();
-            if (!query) return;
-
-            if (query.includes('כשר') || query.includes('כשרות')) selectedGenre = 'kosher';
-            else if (query.includes('קפה') || query.includes('מאפה')) selectedGenre = 'cafe';
-            else if (query.includes('בשר') || query.includes('סטייק')) selectedGenre = 'meat';
-            else if (query.includes('פיצה') || query.includes('איטלקי')) selectedGenre = 'italian';
-            else if (query.includes('סושי') || query.includes('אסיאתי')) selectedGenre = 'sushi';
-            else if (query.includes('מלון') || query.includes('צימר')) selectedGenre = 'hotel';
-            else if (query.includes('בר') || query.includes('אלכוהול')) selectedGenre = 'bar';
-
-            const pill = Array.from(document.querySelectorAll('.pill')).find(p => p.getAttribute('onclick').includes(`'${selectedGenre}'`));
-            selectCategory(selectedGenre, pill);
         }
 
         async function fetchPlaces() {
@@ -482,25 +456,26 @@
             const canvas = document.getElementById('wheelCanvas');
             if (!canvas.getContext) return;
             const ctx = canvas.getContext('2d');
-            const outsideRadius = 135, textRadius = 90, insideRadius = 25;
+            const outsideRadius = 100, textRadius = 65, insideRadius = 20;
 
-            ctx.clearRect(0,0,300,300);
+            ctx.clearRect(0, 0, 220, 220);
             const arc = Math.PI / (wheelItems.length / 2);
 
-            for(let i = 0; i < wheelItems.length; i++) {
+            for (let i = 0; i < wheelItems.length; i++) {
                 const angle = startAngle + i * arc;
                 ctx.fillStyle = colors[i % colors.length];
+
                 ctx.beginPath();
-                ctx.arc(150, 150, outsideRadius, angle, angle + arc, false);
-                ctx.arc(150, 150, insideRadius, angle + arc, angle, true);
+                ctx.arc(110, 110, outsideRadius, angle, angle + arc, false);
+                ctx.arc(110, 110, insideRadius, angle + arc, angle, true);
                 ctx.fill();
 
                 ctx.save();
                 ctx.fillStyle = "white";
-                ctx.font = "bold 12px Heebo";
-                ctx.translate(150 + Math.cos(angle + arc / 2) * textRadius, 150 + Math.sin(angle + arc / 2) * textRadius);
+                ctx.font = "bold 10px Heebo";
+                ctx.translate(110 + Math.cos(angle + arc / 2) * textRadius, 110 + Math.sin(angle + arc / 2) * textRadius);
                 ctx.rotate(angle + arc / 2 + Math.PI / 2);
-                const text = wheelItems[i].name.length > 12 ? wheelItems[i].name.substring(0, 10) + '..' : wheelItems[i].name;
+                const text = wheelItems[i].name.length > 9 ? wheelItems[i].name.substring(0, 8) + '..' : wheelItems[i].name;
                 ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
                 ctx.restore();
             }
@@ -515,11 +490,17 @@
 
         function rotateWheel() {
             spinTime += 30;
-            if(spinTime >= spinTimeTotal) { stopRotateWheel(); return; }
+            if (spinTime >= spinTimeTotal) { stopRotateWheel(); return; }
             const spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
             startAngle += (spinAngle * Math.PI / 180);
             drawWheel();
             spinTimeout = setTimeout(rotateWheel, 30);
+        }
+
+        function fireConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            }
         }
 
         function stopRotateWheel() {
@@ -532,59 +513,111 @@
             document.getElementById('spinBtn').style.display = 'none';
             document.getElementById('modalBody').innerHTML = `
                 <div style="margin-top: 10px;">
-                    <p style="color: #10b981; font-weight: 800; font-size: 16px; margin-bottom: 8px;">🎉 המזל בחר עבורך:</p>
+                    <p style="color: #10b981; font-weight: 800; font-size: 15px; margin-bottom: 6px;">🎉 המזל בחר עבורך:</p>
                     ${renderCardHTML(winner)}
                 </div>
             `;
+            fireConfetti();
         }
 
         function easeOut(t, b, c, d) {
-            const ts = (t/=d)*t, tc = ts*t;
-            return b+c*(tc + -3*ts + 3*t);
+            const ts = (t /= d) * t, tc = ts * t;
+            return b + c * (tc + -3 * ts + 3 * t);
         }
 
-        /* Match Mode Logic */
+        /* Improved Multi-User Match Mode Logic */
+        let totalUsers = 2;
+        let currentUserTurn = 1;
         let matchIndex = 0;
         let matchPlaces = [];
-        let likedPlaces = [];
+        let votesScores = {}; // מילון נקודות לכל מקום
 
-        async function startMatchMode() {
+        async function setupMatchGroup() {
             if (fetchedPlacesList.length === 0) fetchedPlacesList = await fetchPlaces();
             if (fetchedPlacesList.length === 0) return alert('אין מקומות זמינים ברדיוס ל-Match.');
 
-            matchPlaces = fetchedPlacesList.slice(0, 5);
-            matchIndex = 0;
-            likedPlaces = [];
+            const num = prompt('כמה משתתפים אתם בקבוצה?', '2');
+            if (!num || isNaN(num) || parseInt(num) < 2) {
+                totalUsers = 2;
+            } else {
+                totalUsers = parseInt(num);
+            }
 
-            document.getElementById('matchActions').style.display = 'flex';
+            matchPlaces = fetchedPlacesList.slice(0, 5);
+            votesScores = {};
+            matchPlaces.forEach(p => votesScores[p.id] = 0);
+
+            currentUserTurn = 1;
+            matchIndex = 0;
+
             document.getElementById('matchModal').style.display = 'flex';
+            document.getElementById('nextUserBtn').style.display = 'none';
+            document.getElementById('matchActions').style.display = 'flex';
+
             renderMatchCard();
         }
 
         function renderMatchCard() {
             const body = document.getElementById('matchCardBody');
+            const progress = document.getElementById('matchProgress');
+
             if (matchIndex >= matchPlaces.length) {
+                // סיום תור של משתתף יחיד
                 document.getElementById('matchActions').style.display = 'none';
-                if (likedPlaces.length > 0) {
-                    const topMatch = likedPlaces[0];
+
+                if (currentUserTurn < totalUsers) {
+                    progress.innerText = `תור משתתף ${currentUserTurn} מתוך ${totalUsers} הסתיים!`;
                     body.innerHTML = `
-                        <h3 style="color:#10b981;">🎉 יש Match קבוצתי!</h3>
-                        <p style="font-size:14px; color:var(--text-sub);">המקום שכולם הסכימו עליו:</p>
-                        ${renderCardHTML(topMatch)}
+                        <div style="padding:15px 0;">
+                            <p style="font-size:16px; font-weight:800; color:var(--primary);">סיימת להצביע! 🎉</p>
+                            <p style="font-size:13px; color:var(--text-sub);">אנא העבר את המכשיר למשתתף ${currentUserTurn + 1}.</p>
+                        </div>
                     `;
+                    document.getElementById('nextUserBtn').style.display = 'block';
                 } else {
-                    body.innerHTML = '<p style="color:var(--text-sub);">לא נמצאה הסכמה בסיבוב הזה 😅 כדאי להגריל בגלגל!</p>';
+                    // סיום הצבעה של כולן - חישוב המנצח!
+                    progress.innerText = `ההצבעה הקבוצתית הסתיימה! 🎉`;
+                    let bestPlace = matchPlaces[0];
+                    let maxVotes = -1;
+
+                    matchPlaces.forEach(p => {
+                        if (votesScores[p.id] > maxVotes) {
+                            maxVotes = votesScores[p.id];
+                            bestPlace = p;
+                        }
+                    });
+
+                    body.innerHTML = `
+                        <h3 style="color:#10b981; font-size:18px;">🎉 יש Match קבוצתי!</h3>
+                        <p style="font-size:13px; color:var(--text-sub); margin-bottom:10px;">
+                            המקום שקיבל הכי הרבה קולות מבין ${totalUsers} המשתתפים:
+                        </p>
+                        ${renderCardHTML(bestPlace)}
+                    `;
+                    fireConfetti();
                 }
                 return;
             }
 
+            progress.innerText = `משתתף ${currentUserTurn} מתוך ${totalUsers} | מקום ${matchIndex + 1} מתוך ${matchPlaces.length}`;
             const place = matchPlaces[matchIndex];
             body.innerHTML = renderCardHTML(place);
         }
 
         function voteMatch(isLike) {
-            if (isLike) likedPlaces.push(matchPlaces[matchIndex]);
+            const place = matchPlaces[matchIndex];
+            if (isLike) {
+                votesScores[place.id] = (votesScores[place.id] || 0) + 1;
+            }
             matchIndex++;
+            renderMatchCard();
+        }
+
+        function startNextUserTurn() {
+            currentUserTurn++;
+            matchIndex = 0;
+            document.getElementById('nextUserBtn').style.display = 'none';
+            document.getElementById('matchActions').style.display = 'flex';
             renderMatchCard();
         }
 
