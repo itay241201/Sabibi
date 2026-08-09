@@ -9,16 +9,22 @@ CORS(app)
 
 GOOGLE_API_KEY = "AIzaSyDi4k9JXzYIWgmG5VE6F-axQ6-TJY5fG6M"
 
-# מילון סגנונות מורחב
 GENRE_MAP = {
+    # אוכל
     "restaurant": {"type": "restaurant", "keyword": "restaurant"},
     "italian": {"type": "restaurant", "keyword": "italian restaurant pizza"},
     "sushi": {"type": "restaurant", "keyword": "sushi asian restaurant"},
     "meat": {"type": "restaurant", "keyword": "steakhouse meat restaurant"},
-    "vegan": {"type": "restaurant", "keyword": "vegan vegetarian restaurant"},
+    "vegan_only": {"type": "restaurant", "keyword": "vegan restaurant"},
+    "kosher": {"type": "restaurant", "keyword": "kosher restaurant"},
     "cafe": {"type": "cafe", "keyword": "cafe coffee shop"},
+    # חיי לילה
+    "bar": {"type": "bar", "keyword": "bar pub nightlife"},
+    # לינה
     "hotel": {"type": "lodging", "keyword": "hotel resort boutique hotel"},
-    "b_and_b": {"type": "lodging", "keyword": "zimer bed and breakfast guest house"}
+    "b_and_b": {"type": "lodging", "keyword": "zimer bed and breakfast guest house"},
+    # אטרקציות
+    "attraction": {"type": "tourist_attraction", "keyword": "attraction park museum"}
 }
 
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -40,12 +46,11 @@ def search_places():
     data = request.json
     center_lat = float(data.get('lat'))
     center_lng = float(data.get('lng'))
-    max_radius = float(data.get('radius', 1000))
+    max_radius = float(data.get('radius', 2000))
     genre = data.get('genre', 'restaurant')
     min_rating = float(data.get('min_rating', 0))
     open_now = data.get('open_now', False)
 
-    # שליפת המידע הנכון מתוך המילון
     genre_info = GENRE_MAP.get(genre, {"type": "restaurant", "keyword": "restaurant"})
 
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
@@ -56,10 +61,10 @@ def search_places():
         "key": GOOGLE_API_KEY
     }
 
-    if genre != "restaurant":
+    if "keyword" in genre_info:
         params["keyword"] = genre_info["keyword"]
         
-    if open_now and genre_info["type"] == "restaurant":
+    if open_now and genre_info["type"] in ["restaurant", "cafe", "bar"]:
         params["opennow"] = "true"
 
     try:
@@ -72,7 +77,6 @@ def search_places():
             p_lng = place['geometry']['location']['lng']
             
             exact_distance = calculate_distance(center_lat, center_lng, p_lat, p_lng)
-            
             if exact_distance > max_radius:
                 continue
 
@@ -80,38 +84,39 @@ def search_places():
             user_ratings_total = place.get("user_ratings_total", 0)
             price_lvl = place.get("price_level")
 
-            if price_lvl is not None and price_lvl > 0:
-                price_display = "₪" * int(price_lvl)
-            else:
-                price_display = "₪₪"
+            price_display = "₪" * int(price_lvl) if (price_lvl is not None and price_lvl > 0) else "₪₪"
 
             if google_rating >= min_rating:
                 place_id = place.get("place_id")
                 
+                # תמונה מ-Google Places
+                photo_url = None
+                if place.get("photos"):
+                    photo_ref = place["photos"][0].get("photo_reference")
+                    if photo_ref:
+                        photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={photo_ref}&key={GOOGLE_API_KEY}"
+
+                # חישוב זמני הגעה משוערים
+                walk_min = max(1, round(exact_distance / 80))   # ~4.8 קמ"ש
+                drive_min = max(1, round(exact_distance / 500)) # ~30 קמ"ש עירוני
+
                 base_score = google_rating * 16
-
-                if user_ratings_total >= 2500:
-                    ratings_bonus = 20
-                elif user_ratings_total >= 1000:
-                    ratings_bonus = 15
-                elif user_ratings_total >= 500:
-                    ratings_bonus = 10
-                elif user_ratings_total >= 150:
-                    ratings_bonus = 5
-                else:
-                    ratings_bonus = 0
-
+                ratings_bonus = 20 if user_ratings_total >= 2500 else (15 if user_ratings_total >= 1000 else (10 if user_ratings_total >= 500 else (5 if user_ratings_total >= 150 else 0)))
                 combined_score = int(min(100, round(base_score + ratings_bonus)))
 
                 maps_url = f"https://www.google.com/maps/search/?api=1&query={p_lat},{p_lng}&query_place_id={place_id}"
 
                 filtered_places.append({
+                    "id": place_id,
                     "name": place.get("name"),
                     "google_rating": google_rating,
                     "combined_score": combined_score,
                     "price_display": price_display,
                     "address": place.get("vicinity", "כתובת לא זמינה"),
                     "distance": int(exact_distance),
+                    "walk_min": walk_min,
+                    "drive_min": drive_min,
+                    "photo_url": photo_url,
                     "lat": p_lat,
                     "lng": p_lng,
                     "genre": genre,
