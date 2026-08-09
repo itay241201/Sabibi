@@ -14,32 +14,53 @@
             --bg-main: #f8fafc;
             --panel-bg: rgba(255, 255, 255, 0.98);
             --primary: #00c2e8;
-            --primary-hover: #00a8ca;
-            --accent: #8b5cf6;
             --text-main: #0f172a;
             --text-sub: #64748b;
             --card-bg: #ffffff;
-            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            --control-bg: #f8fafc;
+            --border-color: #f1f5f9;
+            --pill-bg: #f1f5f9;
             --border-radius: 18px;
         }
 
+        body.dark-mode {
+            --bg-main: #0f172a;
+            --panel-bg: rgba(30, 41, 59, 0.98);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --card-bg: #1e293b;
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --control-bg: #334155;
+            --border-color: #334155;
+            --pill-bg: #334155;
+        }
+
         * { box-sizing: border-box; font-family: 'Heebo', sans-serif; -webkit-tap-highlight-color: transparent; }
-        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background: var(--bg-main); color: var(--text-main); }
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background: var(--bg-main); color: var(--text-main); transition: background 0.3s, color 0.3s; }
         body { display: flex; flex-direction: row; }
 
         #sidebar {
             width: 420px; min-width: 420px; padding: 24px;
             background: var(--panel-bg); backdrop-filter: blur(16px);
-            border-left: 1px solid rgba(0, 0, 0, 0.05);
+            border-left: 1px solid var(--border-color);
             z-index: 1000; overflow-y: auto; height: 100vh;
             box-shadow: 10px 0 30px rgba(0,0,0,0.04);
+            transition: background 0.3s;
         }
 
         .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .brand-logo { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main); }
         .brand-logo span { color: var(--primary); }
 
-        /* Container for Horizontal Pills with Arrows */
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+
+        .theme-toggle-btn {
+            background: var(--control-bg); border: 1px solid var(--border-color);
+            color: var(--text-main); padding: 8px 12px; border-radius: 20px;
+            cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px;
+        }
+
         .pills-wrapper { position: relative; display: flex; align-items: center; margin-bottom: 16px; }
         
         .pills-scroll {
@@ -48,21 +69,21 @@
         }
 
         .scroll-btn {
-            background: rgba(255,255,255,0.9); border: 1px solid #cbd5e1;
-            border-radius: 50%; width: 28px; height: 28px; display: flex;
+            background: var(--panel-bg); border: 1px solid var(--border-color);
+            color: var(--text-main); border-radius: 50%; width: 28px; height: 28px; display: flex;
             align-items: center; justify-content: center; cursor: pointer;
             font-size: 14px; font-weight: bold; z-index: 10; flex-shrink: 0;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .pill {
-            flex: 0 0 auto; padding: 8px 16px; border-radius: 30px; background: #f1f5f9;
+            flex: 0 0 auto; padding: 8px 16px; border-radius: 30px; background: var(--pill-bg);
             color: var(--text-sub); font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid transparent;
             transition: all 0.2s ease; user-select: none;
         }
-        .pill.active { background: var(--text-main); color: #fff; }
+        .pill.active { background: var(--primary); color: #fff; }
 
-        .control-card { background: #f8fafc; padding: 16px; border-radius: var(--border-radius); margin-bottom: 16px; border: 1px solid #edf2f7; }
+        .control-card { background: var(--control-bg); padding: 16px; border-radius: var(--border-radius); margin-bottom: 16px; border: 1px solid var(--border-color); }
         .control-label { font-size: 13px; font-weight: 700; color: var(--text-sub); display: flex; justify-content: space-between; margin-bottom: 8px; }
 
         input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
@@ -75,8 +96,8 @@
         .btn-main:active { transform: scale(0.98); }
 
         .btn-secondary {
-            width: 100%; padding: 12px; margin-top: 8px; background: #f1f5f9; color: var(--text-main);
-            border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer;
+            padding: 8px 14px; background: var(--control-bg); color: var(--text-main);
+            border: 1px solid var(--border-color); border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer;
         }
 
         #map { flex: 1; height: 100vh; width: 100%; z-index: 1; }
@@ -84,11 +105,11 @@
         .place-card {
             background: var(--card-bg); border-radius: var(--border-radius); padding: 0;
             margin-bottom: 20px; box-shadow: var(--card-shadow); overflow: hidden;
-            border: 1px solid #f1f5f9; transition: transform 0.2s ease; position: relative;
+            border: 1px solid var(--border-color); transition: transform 0.2s ease; position: relative;
         }
         .place-card:hover { transform: translateY(-2px); }
 
-        .img-container { width: 100%; height: 160px; background: #e2e8f0; position: relative; }
+        .img-container { width: 100%; height: 160px; background: #334155; position: relative; }
         .place-img { width: 100%; height: 100%; object-fit: cover; }
 
         .badge-score {
@@ -102,7 +123,7 @@
         .place-subtitle { font-size: 13px; color: var(--text-sub); margin: 0 0 12px 0; }
 
         .meta-row { display: flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 700; color: var(--text-sub); }
-        .meta-item { display: flex; align-items: center; gap: 4px; background: #f8fafc; padding: 4px 10px; border-radius: 8px; }
+        .meta-item { display: flex; align-items: center; gap: 4px; background: var(--control-bg); padding: 4px 10px; border-radius: 8px; }
 
         .card-actions { display: flex; gap: 8px; margin-top: 14px; }
         .btn-nav { flex: 1; padding: 10px; background: var(--primary); color: white; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 800; font-size: 13px; }
@@ -121,10 +142,14 @@
         <div class="drag-handle"></div>
         <div class="header-row">
             <div class="brand-logo">Sabibi<span>.</span></div>
-            <button class="btn-secondary" style="margin:0; width:auto; padding:6px 14px;" onclick="locateMe()">🎯 המיקום שלי</button>
+            <div class="header-actions">
+                <button class="theme-toggle-btn" onclick="toggleDarkMode()">
+                    <span id="themeIcon">🌙</span> <span id="themeText">כהה</span>
+                </button>
+                <button class="btn-secondary" onclick="locateMe()">🎯 המיקום שלי</button>
+            </div>
         </div>
 
-        <!-- Horizontal Category Pills with Scroll Buttons -->
         <div class="pills-wrapper">
             <button class="scroll-btn" onclick="scrollPills(-120)" style="margin-left: 4px;">›</button>
             <div class="pills-scroll" id="pillsContainer">
@@ -156,9 +181,9 @@
         </div>
 
         <button class="btn-main" onclick="searchRestaurants()">חפש בסביבה</button>
-        <button class="btn-secondary" onclick="pickRandomFromAll()">🎲 תגריל לי מקום!</button>
+        <button class="btn-secondary" style="width:100%; margin-top:8px; padding:12px;" onclick="pickRandomFromAll()">🎲 תגריל לי מקום!</button>
 
-        <hr style="margin: 20px 0; border: none; border-top: 1px solid #f1f5f9;">
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border-color);">
 
         <div id="results">
             <p style="color: var(--text-sub); font-size: 13px; text-align: center;">בחר קטגוריה ולחץ על החיפוש...</p>
@@ -173,7 +198,19 @@
         let selectedGenre = 'restaurant';
 
         const map = L.map('map', { zoomControl: false }).setView([defaultLat, defaultLng], 14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        /* מפות מודרניות מבית CartoDB */
+        const lightTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+            maxZoom: 19
+        });
+
+        const darkTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+            maxZoom: 19
+        });
+
+        lightTile.addTo(map);
 
         let radius = 2000;
         let minRating = 4.0;
@@ -182,7 +219,23 @@
         let marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
         let circle = L.circle([defaultLat, defaultLng], { radius: radius, color: '#00c2e8', fillColor: '#00c2e8', fillOpacity: 0.12 }).addTo(map);
 
-        /* גלילת הסרגל אופקית במחשב בעכבר או בלחיצת חיצים */
+        /* Toggle Dark Mode עם החלפת סגנון המפה בלייב */
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            
+            document.getElementById('themeIcon').innerText = isDark ? '☀️' : '🌙';
+            document.getElementById('themeText').innerText = isDark ? 'בהיר' : 'כהה';
+
+            if (isDark) {
+                map.removeLayer(lightTile);
+                darkTile.addTo(map);
+            } else {
+                map.removeLayer(darkTile);
+                lightTile.addTo(map);
+            }
+        }
+
         const pillsContainer = document.getElementById('pillsContainer');
         
         function scrollPills(amount) {
@@ -261,7 +314,7 @@
 
                         const imgTag = place.photo_url 
                             ? `<img src="${place.photo_url}" class="place-img" alt="${place.name}">`
-                            : `<div style="width:100%;height:100%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:32px;">📍</div>`;
+                            : `<div style="width:100%;height:100%;background:var(--control-bg);display:flex;align-items:center;justify-content:center;font-size:32px;">📍</div>`;
 
                         resultsDiv.innerHTML += `
                             <div class="place-card">
