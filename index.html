@@ -13,7 +13,7 @@
         :root {
             --bg-main: #f8fafc;
             --panel-bg: rgba(255, 255, 255, 0.98);
-            --primary: #00c2e8; /* צבע טורקיז-וולט רענן */
+            --primary: #00c2e8;
             --primary-hover: #00a8ca;
             --accent: #8b5cf6;
             --text-main: #0f172a;
@@ -27,7 +27,6 @@
         html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background: var(--bg-main); color: var(--text-main); }
         body { display: flex; flex-direction: row; }
 
-        /* Sidebar Styles */
         #sidebar {
             width: 420px; min-width: 420px; padding: 24px;
             background: var(--panel-bg); backdrop-filter: blur(16px);
@@ -40,21 +39,29 @@
         .brand-logo { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main); }
         .brand-logo span { color: var(--primary); }
 
-        /* Horizontal Category Pills */
-        .pills-scroll {
-            display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 16px;
-            scrollbar-width: none;
-        }
-        .pills-scroll::-webkit-scrollbar { display: none; }
+        /* Container for Horizontal Pills with Arrows */
+        .pills-wrapper { position: relative; display: flex; align-items: center; margin-bottom: 16px; }
         
+        .pills-scroll {
+            display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 8px 0; width: 100%;
+            scrollbar-width: thin; scroll-behavior: smooth;
+        }
+
+        .scroll-btn {
+            background: rgba(255,255,255,0.9); border: 1px solid #cbd5e1;
+            border-radius: 50%; width: 28px; height: 28px; display: flex;
+            align-items: center; justify-content: center; cursor: pointer;
+            font-size: 14px; font-weight: bold; z-index: 10; flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
         .pill {
             flex: 0 0 auto; padding: 8px 16px; border-radius: 30px; background: #f1f5f9;
             color: var(--text-sub); font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid transparent;
-            transition: all 0.2s ease;
+            transition: all 0.2s ease; user-select: none;
         }
         .pill.active { background: var(--text-main); color: #fff; }
 
-        /* Quick Controls */
         .control-card { background: #f8fafc; padding: 16px; border-radius: var(--border-radius); margin-bottom: 16px; border: 1px solid #edf2f7; }
         .control-label { font-size: 13px; font-weight: 700; color: var(--text-sub); display: flex; justify-content: space-between; margin-bottom: 8px; }
 
@@ -74,7 +81,6 @@
 
         #map { flex: 1; height: 100vh; width: 100%; z-index: 1; }
 
-        /* Wolt-Style Cards */
         .place-card {
             background: var(--card-bg); border-radius: var(--border-radius); padding: 0;
             margin-bottom: 20px; box-shadow: var(--card-shadow); overflow: hidden;
@@ -100,7 +106,6 @@
 
         .card-actions { display: flex; gap: 8px; margin-top: 14px; }
         .btn-nav { flex: 1; padding: 10px; background: var(--primary); color: white; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 800; font-size: 13px; }
-        .btn-share { padding: 10px 14px; background: #f1f5f9; color: var(--text-main); border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
 
         @media (max-width: 768px) {
             body { flex-direction: column-reverse; }
@@ -119,17 +124,21 @@
             <button class="btn-secondary" style="margin:0; width:auto; padding:6px 14px;" onclick="locateMe()">🎯 המיקום שלי</button>
         </div>
 
-        <!-- Horizontal Category Scroll (Wolt Style) -->
-        <div class="pills-scroll" id="pillsContainer">
-            <div class="pill active" onclick="selectCategory('restaurant', this)">🍽️ הכל</div>
-            <div class="pill" onclick="selectCategory('kosher', this)">📜 כשר</div>
-            <div class="pill" onclick="selectCategory('italian', this)">🍕 איטלקי</div>
-            <div class="pill" onclick="selectCategory('sushi', this)">🍣 סושי</div>
-            <div class="pill" onclick="selectCategory('meat', this)">🥩 בשרים</div>
-            <div class="pill" onclick="selectCategory('cafe', this)">☕ קפה</div>
-            <div class="pill" onclick="selectCategory('bar', this)">🍹 בארים</div>
-            <div class="pill" onclick="selectCategory('hotel', this)">🏨 מלונות</div>
-            <div class="pill" onclick="selectCategory('attraction', this)">🎡 אטרקציות</div>
+        <!-- Horizontal Category Pills with Scroll Buttons -->
+        <div class="pills-wrapper">
+            <button class="scroll-btn" onclick="scrollPills(-120)" style="margin-left: 4px;">›</button>
+            <div class="pills-scroll" id="pillsContainer">
+                <div class="pill active" onclick="selectCategory('restaurant', this)">🍽️ הכל</div>
+                <div class="pill" onclick="selectCategory('kosher', this)">📜 כשר</div>
+                <div class="pill" onclick="selectCategory('italian', this)">🍕 איטלקי</div>
+                <div class="pill" onclick="selectCategory('sushi', this)">🍣 סושי</div>
+                <div class="pill" onclick="selectCategory('meat', this)">🥩 בשרים</div>
+                <div class="pill" onclick="selectCategory('cafe', this)">☕ קפה</div>
+                <div class="pill" onclick="selectCategory('bar', this)">🍹 בארים</div>
+                <div class="pill" onclick="selectCategory('hotel', this)">🏨 מלונות</div>
+                <div class="pill" onclick="selectCategory('attraction', this)">🎡 אטרקציות</div>
+            </div>
+            <button class="scroll-btn" onclick="scrollPills(120)" style="margin-right: 4px;">‹</button>
         </div>
 
         <div class="control-card">
@@ -138,6 +147,12 @@
                 <span id="radiusVal" style="color:var(--primary);">2,000 מטר</span>
             </div>
             <input type="range" id="radiusSlider" min="200" max="15000" step="200" value="2000">
+
+            <div class="control-label" style="margin-top: 14px;">
+                <span>דירוג מינימלי</span>
+                <span id="ratingVal" style="color:var(--primary);">4.0 ⭐</span>
+            </div>
+            <input type="range" id="ratingSlider" min="1.0" max="5.0" step="0.1" value="4.0">
         </div>
 
         <button class="btn-main" onclick="searchRestaurants()">חפש בסביבה</button>
@@ -161,10 +176,23 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
         let radius = 2000;
+        let minRating = 4.0;
         let restaurantMarkers = [];
 
         let marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
         let circle = L.circle([defaultLat, defaultLng], { radius: radius, color: '#00c2e8', fillColor: '#00c2e8', fillOpacity: 0.12 }).addTo(map);
+
+        /* גלילת הסרגל אופקית במחשב בעכבר או בלחיצת חיצים */
+        const pillsContainer = document.getElementById('pillsContainer');
+        
+        function scrollPills(amount) {
+            pillsContainer.scrollBy({ left: amount, behavior: 'smooth' });
+        }
+
+        pillsContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            pillsContainer.scrollLeft += e.deltaY;
+        });
 
         function selectCategory(genre, element) {
             document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
@@ -197,6 +225,11 @@
             circle.setRadius(radius);
         });
 
+        document.getElementById('ratingSlider').addEventListener('input', e => {
+            minRating = e.target.value;
+            document.getElementById('ratingVal').innerText = Number(minRating).toFixed(1) + ' ⭐';
+        });
+
         async function searchRestaurants() {
             const resultsDiv = document.getElementById('results');
             restaurantMarkers.forEach(m => map.removeLayer(m));
@@ -208,7 +241,13 @@
                 const response = await fetch('/api/search', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ lat: pos.lat, lng: pos.lng, radius: radius, genre: selectedGenre })
+                    body: JSON.stringify({ 
+                        lat: pos.lat, 
+                        lng: pos.lng, 
+                        radius: radius, 
+                        genre: selectedGenre,
+                        min_rating: minRating
+                    })
                 });
 
                 const data = await response.json();
@@ -246,7 +285,7 @@
                         `;
                     });
                 } else {
-                    resultsDiv.innerHTML = '<p style="text-align:center; color:var(--text-sub);">לא נמצאו מקומות ברדיוס הזה.</p>';
+                    resultsDiv.innerHTML = '<p style="text-align:center; color:var(--text-sub);">לא נמצאו מקומות ברדיוס ובדירוג הזה.</p>';
                 }
             } catch (e) {
                 resultsDiv.innerHTML = '<p style="text-align:center; color:#ef4444;">שגיאה בתקשורת עם השרת.</p>';
