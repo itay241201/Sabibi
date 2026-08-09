@@ -3,100 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sabibi 📍 סביבי - האפליקציה לבילוי ופנאי</title>
+    <title>Sabibi 📍 סביבי - גלה את הסביבה שלך</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-color: #eef2f5;
-            --panel-bg: rgba(255, 255, 255, 0.95);
-            --text-color: #1e293b;
+            --bg-main: #f8fafc;
+            --panel-bg: rgba(255, 255, 255, 0.98);
+            --primary: #00c2e8; /* צבע טורקיז-וולט רענן */
+            --primary-hover: #00a8ca;
+            --accent: #8b5cf6;
+            --text-main: #0f172a;
             --text-sub: #64748b;
             --card-bg: #ffffff;
-            --border-color: #e2e8f0;
-        }
-
-        body.dark-mode {
-            --bg-color: #0f172a;
-            --panel-bg: rgba(30, 41, 59, 0.95);
-            --text-color: #f8fafc;
-            --text-sub: #94a3b8;
-            --card-bg: #1e293b;
-            --border-color: #334155;
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --border-radius: 18px;
         }
 
         * { box-sizing: border-box; font-family: 'Heebo', sans-serif; -webkit-tap-highlight-color: transparent; }
-        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background: var(--bg-color); color: var(--text-color); }
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background: var(--bg-main); color: var(--text-main); }
         body { display: flex; flex-direction: row; }
 
+        /* Sidebar Styles */
         #sidebar {
-            width: 400px; min-width: 400px; padding: 20px;
-            background: var(--panel-bg); backdrop-filter: blur(12px);
-            border-left: 1px solid var(--border-color);
+            width: 420px; min-width: 420px; padding: 24px;
+            background: var(--panel-bg); backdrop-filter: blur(16px);
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
             z-index: 1000; overflow-y: auto; height: 100vh;
-            box-shadow: 4px 0 24px rgba(0,0,0,0.08); transition: all 0.3s ease;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.04);
         }
 
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .brand-header h1 { margin: 0; font-size: 24px; font-weight: 800; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .brand-logo { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main); }
+        .brand-logo span { color: var(--primary); }
 
-        .theme-btn { background: none; border: 1px solid var(--border-color); color: var(--text-color); padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; }
-
-        .form-group { margin-bottom: 14px; }
-        label { font-weight: 600; font-size: 13px; color: var(--text-color); display: flex; justify-content: space-between; margin-bottom: 5px; }
+        /* Horizontal Category Pills */
+        .pills-scroll {
+            display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 16px;
+            scrollbar-width: none;
+        }
+        .pills-scroll::-webkit-scrollbar { display: none; }
         
-        select, input[type="range"] {
-            width: 100%; padding: 10px; border-radius: 8px;
-            border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); font-size: 14px; outline: none;
+        .pill {
+            flex: 0 0 auto; padding: 8px 16px; border-radius: 30px; background: #f1f5f9;
+            color: var(--text-sub); font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid transparent;
+            transition: all 0.2s ease;
         }
+        .pill.active { background: var(--text-main); color: #fff; }
 
-        .toggle-container { display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); }
+        /* Quick Controls */
+        .control-card { background: #f8fafc; padding: 16px; border-radius: var(--border-radius); margin-bottom: 16px; border: 1px solid #edf2f7; }
+        .control-label { font-size: 13px; font-weight: 700; color: var(--text-sub); display: flex; justify-content: space-between; margin-bottom: 8px; }
 
-        .btn-location {
-            width: 100%; padding: 11px; margin-bottom: 12px; background: #0284c7;
-            color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 700;
+        input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+        .btn-main {
+            width: 100%; padding: 14px; background: var(--primary); color: white;
+            border: none; border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 194, 232, 0.3); transition: transform 0.1s, background 0.2s;
         }
+        .btn-main:active { transform: scale(0.98); }
 
-        .btn-primary {
-            width: 100%; padding: 12px; background: linear-gradient(135deg, #10b981, #059669);
-            color: white; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; font-weight: 700;
-        }
-
-        .btn-random {
-            width: 100%; padding: 11px; margin-top: 8px; background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-            color: white; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; font-weight: 700;
+        .btn-secondary {
+            width: 100%; padding: 12px; margin-top: 8px; background: #f1f5f9; color: var(--text-main);
+            border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer;
         }
 
         #map { flex: 1; height: 100vh; width: 100%; z-index: 1; }
 
-        .card {
-            background: var(--card-bg); padding: 12px; border-radius: 12px; margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border-color); position: relative;
+        /* Wolt-Style Cards */
+        .place-card {
+            background: var(--card-bg); border-radius: var(--border-radius); padding: 0;
+            margin-bottom: 20px; box-shadow: var(--card-shadow); overflow: hidden;
+            border: 1px solid #f1f5f9; transition: transform 0.2s ease; position: relative;
+        }
+        .place-card:hover { transform: translateY(-2px); }
+
+        .img-container { width: 100%; height: 160px; background: #e2e8f0; position: relative; }
+        .place-img { width: 100%; height: 100%; object-fit: cover; }
+
+        .badge-score {
+            position: absolute; bottom: 12px; right: 12px; background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px); color: #fff; padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 4px;
         }
 
-        .card-img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+        .card-body { padding: 16px; }
+        .place-title { font-size: 18px; font-weight: 800; margin: 0 0 4px 0; color: var(--text-main); }
+        .place-subtitle { font-size: 13px; color: var(--text-sub); margin: 0 0 12px 0; }
 
-        .score-badge { background: #fef3c7; color: #92400e; padding: 3px 8px; border-radius: 15px; font-weight: 700; font-size: 11px; display: inline-block; }
-        .dist-badge { background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 15px; font-weight: 600; font-size: 11px; margin-left: 4px; }
-        .price-badge { background: var(--border-color); color: #16a34a; padding: 3px 8px; border-radius: 15px; font-weight: 700; font-size: 11px; float: left; }
+        .meta-row { display: flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 700; color: var(--text-sub); }
+        .meta-item { display: flex; align-items: center; gap: 4px; background: #f8fafc; padding: 4px 10px; border-radius: 8px; }
 
-        .fav-btn { position: absolute; top: 18px; left: 18px; background: rgba(255,255,255,0.85); border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-        .btn-group { display: flex; gap: 6px; margin-top: 8px; }
-        .nav-btn { flex: 2; padding: 8px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600; text-align: center; }
-        .share-btn { flex: 1; padding: 8px; background: #22c55e; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
-
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); color: var(--text-color); padding: 20px; border-radius: 16px; width: 90%; max-width: 400px; text-align: center; }
+        .card-actions { display: flex; gap: 8px; margin-top: 14px; }
+        .btn-nav { flex: 1; padding: 10px; background: var(--primary); color: white; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 800; font-size: 13px; }
+        .btn-share { padding: 10px 14px; background: #f1f5f9; color: var(--text-main); border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
 
         @media (max-width: 768px) {
             body { flex-direction: column-reverse; }
             #map { height: 100vh; position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
-            #sidebar { width: 100%; min-width: 100%; height: 50vh; position: absolute; bottom: 0; left: 0; right: 0; border-left: none; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 16px; }
-            .drag-handle { width: 40px; height: 5px; background: #cbd5e1; border-radius: 10px; margin: 0 auto 10px auto; cursor: pointer; }
+            #sidebar { width: 100%; min-width: 100%; height: 55vh; position: absolute; bottom: 0; left: 0; right: 0; border-left: none; border-top-left-radius: 28px; border-top-right-radius: 28px; padding: 20px; }
+            .drag-handle { width: 36px; height: 5px; background: #cbd5e1; border-radius: 10px; margin: 0 auto 16px auto; }
         }
     </style>
 </head>
@@ -105,111 +115,63 @@
     <div id="sidebar">
         <div class="drag-handle"></div>
         <div class="header-row">
-            <div class="brand-header">
-                <h1>📍 Sabibi <span style="font-size:13px; color:var(--text-sub); font-weight:400;">סביבי</span></h1>
+            <div class="brand-logo">Sabibi<span>.</span></div>
+            <button class="btn-secondary" style="margin:0; width:auto; padding:6px 14px;" onclick="locateMe()">🎯 המיקום שלי</button>
+        </div>
+
+        <!-- Horizontal Category Scroll (Wolt Style) -->
+        <div class="pills-scroll" id="pillsContainer">
+            <div class="pill active" onclick="selectCategory('restaurant', this)">🍽️ הכל</div>
+            <div class="pill" onclick="selectCategory('kosher', this)">📜 כשר</div>
+            <div class="pill" onclick="selectCategory('italian', this)">🍕 איטלקי</div>
+            <div class="pill" onclick="selectCategory('sushi', this)">🍣 סושי</div>
+            <div class="pill" onclick="selectCategory('meat', this)">🥩 בשרים</div>
+            <div class="pill" onclick="selectCategory('cafe', this)">☕ קפה</div>
+            <div class="pill" onclick="selectCategory('bar', this)">🍹 בארים</div>
+            <div class="pill" onclick="selectCategory('hotel', this)">🏨 מלונות</div>
+            <div class="pill" onclick="selectCategory('attraction', this)">🎡 אטרקציות</div>
+        </div>
+
+        <div class="control-card">
+            <div class="control-label">
+                <span>רדיוס חיפוש</span>
+                <span id="radiusVal" style="color:var(--primary);">2,000 מטר</span>
             </div>
-            <button class="theme-btn" onclick="toggleTheme()">🌙/☀️</button>
+            <input type="range" id="radiusSlider" min="200" max="15000" step="200" value="2000">
         </div>
 
-        <button class="btn-location" onclick="locateMe()">🎯 המיקום הנוכחי שלי</button>
+        <button class="btn-main" onclick="searchRestaurants()">חפש בסביבה</button>
+        <button class="btn-secondary" onclick="pickRandomFromAll()">🎲 תגריל לי מקום!</button>
 
-        <div class="form-group">
-            <label>רדיוס חיפוש: <span id="radiusVal">2000 מטר</span></label>
-            <input type="range" id="radiusSlider" min="200" max="20000" step="200" value="2000">
-        </div>
-
-        <div class="form-group">
-            <label>מה מחפשים בסביבה?</label>
-            <select id="genreSelect">
-                <optgroup label="אוכל ובילוי 🍽️">
-                    <option value="restaurant">כל המסעדות 🍽️</option>
-                    <option value="kosher">כשר בלבד 📜</option>
-                    <option value="vegan_only">טבעוני 🥗</option>
-                    <option value="italian">איטלקי / פיצה 🍕</option>
-                    <option value="sushi">אסייתי / סושי 🍣</option>
-                    <option value="meat">בשרים 🥩</option>
-                    <option value="cafe">בית קפה ☕</option>
-                </optgroup>
-                <optgroup label="חיי לילה 🍸">
-                    <option value="bar">פאבים ובארים 🍹</option>
-                </optgroup>
-                <optgroup label="לינה ואירוח 🏨">
-                    <option value="hotel">מלונות וריזורטים 🏨</option>
-                    <option value="b_and_b">צימרים וחדרי אירוח 🏡</option>
-                </optgroup>
-                <optgroup label="אטרקציות ופנאי 🎡">
-                    <option value="attraction">אטרקציות ופארקים 🎡</option>
-                </optgroup>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>דירוג מינימלי: <span id="ratingVal">4.0 ⭐</span></label>
-            <input type="range" id="ratingSlider" min="1" max="5" step="0.1" value="4.0">
-        </div>
-
-        <div class="form-group toggle-container">
-            <span style="font-weight: 600; font-size: 13px;">פתוח עכשיו בלבד 🕒</span>
-            <input type="checkbox" id="openNowCheck">
-        </div>
-
-        <button class="btn-primary" onclick="searchRestaurants()">חפש בסביבה</button>
-        <button class="btn-random" onclick="pickRandomFromAll()">🎲 רעב ולא החלטי? תגריל לי מקום!</button>
-        <button class="btn-location" style="background:#6366f1; margin-top:8px;" onclick="showFavorites()">❤️ המועדפים שלי (<span id="favCount">0</span>)</button>
-
-        <hr style="margin: 16px 0; border: none; border-top: 1px solid var(--border-color);">
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #f1f5f9;">
 
         <div id="results">
-            <p style="color: var(--text-sub); font-size: 13px; text-align: center;">לחץ על החיפוש או ההגרלה...</p>
+            <p style="color: var(--text-sub); font-size: 13px; text-align: center;">בחר קטגוריה ולחץ על החיפוש...</p>
         </div>
     </div>
 
     <div id="map"></div>
 
-    <div id="randomModal" class="modal">
-        <div class="modal-content">
-            <h2 style="margin-top:0; color: #6d28d9;">🎉 המקום הנבחר עבורך!</h2>
-            <div id="modalBody"></div>
-            <button class="btn-primary" style="margin-top: 15px; background: #64748b;" onclick="closeModal()">סגור</button>
-        </div>
-    </div>
-
     <script>
         const defaultLat = 32.0853;
         const defaultLng = 34.7818;
+        let selectedGenre = 'restaurant';
 
         const map = L.map('map', { zoomControl: false }).setView([defaultLat, defaultLng], 14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(map);
-        L.control.zoom({ position: 'topleft' }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
         let radius = 2000;
         let restaurantMarkers = [];
-        let currentPlaces = [];
-        let favorites = JSON.parse(localStorage.getItem('sabibi_favs') || '[]');
-
-        const icons = {
-            italian: '🍕', sushi: '🍣', meat: '🥩', vegan_only: '🥗', kosher: '📜', cafe: '☕',
-            bar: '🍹', hotel: '🏨', b_and_b: '🏡', attraction: '🎡', restaurant: '🍽️'
-        };
-
-        function updateFavCount() {
-            document.getElementById('favCount').innerText = favorites.length;
-        }
-        updateFavCount();
-
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-        }
-
-        function createEmojiIcon(emoji) {
-            return L.divIcon({
-                html: `<div style="font-size: 20px; background: white; border-radius: 50%; padding: 3px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); width: 32px; height: 32px; display:flex; align-items:center; justify-content:center;">${emoji}</div>`,
-                className: '', iconSize: [32, 32], iconAnchor: [16, 16]
-            });
-        }
 
         let marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
-        let circle = L.circle([defaultLat, defaultLng], { radius: radius, color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.12 }).addTo(map);
+        let circle = L.circle([defaultLat, defaultLng], { radius: radius, color: '#00c2e8', fillColor: '#00c2e8', fillOpacity: 0.12 }).addTo(map);
+
+        function selectCategory(genre, element) {
+            document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            element.classList.add('active');
+            selectedGenre = genre;
+            searchRestaurants();
+        }
 
         function updateCircleLocation(latlng) {
             marker.setLatLng(latlng);
@@ -220,163 +182,75 @@
         marker.on('drag', e => updateCircleLocation(e.target.getLatLng()));
 
         function locateMe() {
-            if (!navigator.geolocation) return alert("אין תמיכה ב-GPS");
-            navigator.geolocation.getCurrentPosition(position => {
-                const userLatLng = [position.coords.latitude, position.coords.longitude];
-                map.setView(userLatLng, 14);
-                updateCircleLocation(userLatLng);
+            if (!navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition(pos => {
+                const latlng = [pos.coords.latitude, pos.coords.longitude];
+                map.setView(latlng, 14);
+                updateCircleLocation(latlng);
                 searchRestaurants();
             });
         }
 
         document.getElementById('radiusSlider').addEventListener('input', e => {
             radius = e.target.value;
-            document.getElementById('radiusVal').innerText = radius + ' מטר';
+            document.getElementById('radiusVal').innerText = Number(radius).toLocaleString() + ' מטר';
             circle.setRadius(radius);
         });
 
-        document.getElementById('ratingSlider').addEventListener('input', e => {
-            document.getElementById('ratingVal').innerText = e.target.value + ' ⭐';
-        });
-
-        function clearRestaurantMarkers() {
-            restaurantMarkers.forEach(m => map.removeLayer(m));
-            restaurantMarkers = [];
-        }
-
-        function toggleFavorite(placeJson) {
-            const place = JSON.parse(decodeURIComponent(placeJson));
-            const idx = favorites.findIndex(f => f.id === place.id);
-            if (idx >= 0) {
-                favorites.splice(idx, 1);
-            } else {
-                favorites.push(place);
-            }
-            localStorage.setItem('sabibi_favs', JSON.stringify(favorites));
-            updateFavCount();
-            searchRestaurants();
-        }
-
-        function shareWhatsApp(name, mapsUrl) {
-            const text = encodeURIComponent(`היי! מצאתי ב-Sabibi את "${name}":\n${mapsUrl}`);
-            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-        }
-
-        async function fetchPlaces(overrideGenre = null) {
-            const pos = marker.getLatLng();
-            const genre = overrideGenre || document.getElementById('genreSelect').value;
-            const minRating = document.getElementById('ratingSlider').value;
-            const openNow = document.getElementById('openNowCheck').checked;
-
-            const response = await fetch('/api/search', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ lat: pos.lat, lng: pos.lng, radius: radius, genre: genre, min_rating: minRating, open_now: openNow })
-            });
-
-            const data = await response.json();
-            return data.places || [];
-        }
-
-        function renderCard(place) {
-            const emoji = icons[place.genre] || icons.restaurant;
-            const isFav = favorites.some(f => f.id === place.id);
-            const encodedPlace = encodeURIComponent(JSON.stringify(place));
-
-            const imgHtml = place.photo_url ? `<img src="${place.photo_url}" class="card-img" alt="${place.name}">` : '';
-
-            return `
-                <div class="card">
-                    <button class="fav-btn" onclick="toggleFavorite('${encodedPlace}')">${isFav ? '❤️' : '🤍'}</button>
-                    ${imgHtml}
-                    <span class="price-badge">${place.price_display}</span>
-                    <span class="dist-badge">📍 ${place.distance} מ'</span>
-                    <span class="score-badge">🏆 מדד סביבי: ${place.combined_score}/100</span>
-                    <h4 style="margin: 6px 0 2px 0;">${place.name}</h4>
-                    <p style="margin: 0; color: var(--text-sub); font-size: 12px;">${place.address}</p>
-                    <p style="margin: 4px 0 0 0; font-size: 11px; color: var(--text-sub);">
-                        🚶 כ-${place.walk_min} דק' הליכה | 🚗 כ-${place.drive_min} דק' נסיעה
-                    </p>
-                    <p style="margin: 4px 0 0 0; font-size: 12px;">
-                        ⭐ גוגל: <b>${place.google_rating}</b> (${place.user_ratings_total} מדרגים)
-                    </p>
-                    <div class="btn-group">
-                        <a href="${place.maps_url}" target="_blank" class="nav-btn">🧭 נווט ב-Maps</a>
-                        <button class="share-btn" onclick="shareWhatsApp('${place.name}', '${place.maps_url}')">📲 שתף</button>
-                    </div>
-                </div>
-            `;
-        }
-
         async function searchRestaurants() {
             const resultsDiv = document.getElementById('results');
-            clearRestaurantMarkers();
-            resultsDiv.innerHTML = '<p style="color: #2563eb; font-weight: 600; text-align: center;">מחפש בסביבה...</p>';
+            restaurantMarkers.forEach(m => map.removeLayer(m));
+            restaurantMarkers = [];
+            resultsDiv.innerHTML = '<p style="color: var(--primary); font-weight: 700; text-align: center;">מחפש את המקומות הכי שווים...</p>';
 
+            const pos = marker.getLatLng();
             try {
-                currentPlaces = await fetchPlaces();
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ lat: pos.lat, lng: pos.lng, radius: radius, genre: selectedGenre })
+                });
 
-                if (currentPlaces.length > 0) {
-                    resultsDiv.innerHTML = `<h3 style="font-size:14px; color:var(--text-sub);">נמצאו ${currentPlaces.length} תוצאות:</h3>`;
+                const data = await response.json();
+                const places = data.places || [];
 
-                    currentPlaces.forEach(place => {
-                        const emoji = icons[place.genre] || icons.restaurant;
-                        const resMarker = L.marker([place.lat, place.lng], { icon: createEmojiIcon(emoji) })
-                            .addTo(map)
-                            .bindPopup(`<b>${place.name}</b><br>🏆 מדד סביבי: ${place.combined_score}/100`);
+                if (places.length > 0) {
+                    resultsDiv.innerHTML = '';
+                    places.forEach(place => {
+                        const resMarker = L.marker([place.lat, place.lng]).addTo(map);
                         restaurantMarkers.push(resMarker);
 
-                        resultsDiv.innerHTML += renderCard(place);
+                        const imgTag = place.photo_url 
+                            ? `<img src="${place.photo_url}" class="place-img" alt="${place.name}">`
+                            : `<div style="width:100%;height:100%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:32px;">📍</div>`;
+
+                        resultsDiv.innerHTML += `
+                            <div class="place-card">
+                                <div class="img-container">
+                                    ${imgTag}
+                                    <div class="badge-score">🏆 ${place.combined_score}/100</div>
+                                </div>
+                                <div class="card-body">
+                                    <h3 class="place-title">${place.name}</h3>
+                                    <p class="place-subtitle">${place.address}</p>
+                                    <div class="meta-row">
+                                        <div class="meta-item">⭐ ${place.google_rating}</div>
+                                        <div class="meta-item">📍 ${place.distance} מטר</div>
+                                        <div class="meta-item">🚶 ${place.walk_min} דק'</div>
+                                    </div>
+                                    <div class="card-actions">
+                                        <a href="${place.maps_url}" target="_blank" class="btn-nav">🧭 ניווט ב-Maps</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                     });
                 } else {
-                    resultsDiv.innerHTML = '<p style="color: #ef4444; text-align: center;">לא נמצאו תוצאות ברדיוס הזה.</p>';
+                    resultsDiv.innerHTML = '<p style="text-align:center; color:var(--text-sub);">לא נמצאו מקומות ברדיוס הזה.</p>';
                 }
-            } catch (error) {
-                resultsDiv.innerHTML = '<p style="color: #ef4444; text-align: center;">שגיאה בתקשורת עם השרת.</p>';
+            } catch (e) {
+                resultsDiv.innerHTML = '<p style="text-align:center; color:#ef4444;">שגיאה בתקשורת עם השרת.</p>';
             }
-        }
-
-        function showFavorites() {
-            const resultsDiv = document.getElementById('results');
-            clearRestaurantMarkers();
-
-            if (favorites.length === 0) {
-                resultsDiv.innerHTML = '<p style="text-align:center; color:var(--text-sub);">אין לך עדיין מועדפים שמורים.</p>';
-                return;
-            }
-
-            resultsDiv.innerHTML = `<h3 style="font-size:14px;">❤️ המועדפים השמורים שלך (${favorites.length}):</h3>`;
-            favorites.forEach(place => {
-                const emoji = icons[place.genre] || icons.restaurant;
-                const resMarker = L.marker([place.lat, place.lng], { icon: createEmojiIcon(emoji) }).addTo(map);
-                restaurantMarkers.push(resMarker);
-                resultsDiv.innerHTML += renderCard(place);
-            });
-        }
-
-        async function pickRandomFromAll() {
-            const modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = '<p style="color: #6d28d9; font-weight:600;">מגריל מקום...</p>';
-            document.getElementById('randomModal').style.display = 'flex';
-
-            try {
-                const currentGenre = document.getElementById('genreSelect').value;
-                const allPlaces = await fetchPlaces(currentGenre);
-
-                if (allPlaces.length === 0) {
-                    modalBody.innerHTML = '<p style="color: #ef4444;">לא נמצאו תוצאות ברדיוס להגרלה.</p>';
-                    return;
-                }
-
-                const randomPlace = allPlaces[Math.floor(Math.random() * allPlaces.length)];
-                modalBody.innerHTML = renderCard(randomPlace);
-            } catch (error) {
-                modalBody.innerHTML = '<p style="color: #ef4444;">שגיאה בחיבור לשרת.</p>';
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('randomModal').style.display = 'none';
         }
 
         setTimeout(() => { map.invalidateSize(); }, 300);
