@@ -100,15 +100,22 @@
 
         .card-body { padding: 14px; }
         .place-title { font-size: 17px; font-weight: 800; margin: 0 0 4px 0; color: var(--text-main); }
-        .place-subtitle { font-size: 12px; color: var(--text-sub); margin: 0 0 10px 0; }
+        .place-subtitle { font-size: 12px; color: var(--text-sub); margin: 0 0 8px 0; }
 
-        .meta-row { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--text-sub); flex-wrap: wrap; }
+        .meta-row { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--text-sub); flex-wrap: wrap; margin-bottom: 8px; }
         .meta-item { display: flex; align-items: center; gap: 4px; background: var(--control-bg); padding: 4px 8px; border-radius: 8px; }
 
-        .card-actions { display: flex; gap: 8px; margin-top: 12px; }
-        .btn-nav { flex: 2; padding: 10px; background: var(--primary); color: white; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 800; font-size: 13px; }
-        .btn-share { flex: 1; padding: 10px; background: #22c55e; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; }
+        .busy-badge { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 8px; }
+        .busy-green { background: #dcfce7; color: #15803d; }
+        .busy-yellow { background: #fef9c3; color: #a16207; }
+        .busy-red { background: #fee2e2; color: #b91c1c; }
 
+        .card-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+        .btn-nav { flex: 2; padding: 10px; background: var(--primary); color: white; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 800; font-size: 12px; }
+        .btn-share { flex: 1; padding: 10px; background: #22c55e; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; }
+        .btn-calc { flex: 1; padding: 10px; background: #6366f1; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; }
+
+        /* Modal Layout */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 16px; }
         .modal-content { background: var(--card-bg); color: var(--text-main); padding: 20px; border-radius: 24px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); position: relative; }
         
@@ -116,9 +123,16 @@
         #wheelCanvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
         .wheel-arrow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 20px solid #ef4444; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
 
+        /* Swipe Card Container */
+        .swipe-container { position: relative; width: 100%; height: 320px; margin: 10px auto; touch-action: none; }
+        .swipe-card { position: absolute; width: 100%; height: 100%; top: 0; left: 0; border-radius: 18px; background: var(--card-bg); box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid var(--border-color); cursor: grab; user-select: none; transition: transform 0.2s ease, opacity 0.2s ease; overflow: hidden; text-align: right; }
+
         .match-actions { display: flex; gap: 12px; margin-top: 15px; }
         .match-btn-dislike { flex: 1; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; }
         .match-btn-like { flex: 1; padding: 12px; background: #10b981; color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; }
+
+        .calc-input-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 13px; font-weight: 700; }
+        .calc-input-group input { width: 90px; padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--control-bg); color: var(--text-main); text-align: center; font-weight: bold; }
 
         @media (max-width: 768px) {
             body { flex-direction: column-reverse; }
@@ -182,7 +196,7 @@
         
         <div style="display:flex; gap:6px; margin-top:8px;">
             <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color:white; border:none;" onclick="openWheelModal()">🎡 גלגל המזל</button>
-            <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #ec4899, #be185d); color:white; border:none;" onclick="setupMatchGroup()">👥 מצב Match</button>
+            <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #ec4899, #be185d); color:white; border:none;" onclick="setupMatchGroup()">👥 מצב Swipe Match</button>
         </div>
 
         <button class="btn-secondary" style="width:100%; margin-top:6px; padding:10px; background:#6366f1; color:white; border:none;" onclick="showFavorites()">❤️ המועדפים שלי (<span id="favCount">0</span>)</button>
@@ -212,15 +226,46 @@
 
     <div id="matchModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-top:0; color: #ec4899; font-size: 20px;">👥 Match קבוצתי</h2>
-            <p id="matchProgress" style="font-size:12px; font-weight:800; color:var(--primary); margin:0 0 10px 0;"></p>
-            <div id="matchCardBody" style="margin-top: 10px;"></div>
+            <h2 style="margin-top:0; color: #ec4899; font-size: 20px;">👥 Swipe Match</h2>
+            <p id="matchProgress" style="font-size:12px; font-weight:800; color:var(--primary); margin:0 0 6px 0;"></p>
+            <p style="font-size:11px; color:var(--text-sub); margin:0 0 10px 0;">החלק ימינה לקבלת 👍 או שמאלה ל-👎</p>
+            
+            <div id="swipeContainer" class="swipe-container"></div>
+
             <div id="matchActions" class="match-actions">
-                <button class="match-btn-dislike" onclick="voteMatch(false)">👎 לא בא</button>
-                <button class="match-btn-like" onclick="voteMatch(true)">👍 בא לי!</button>
+                <button class="match-btn-dislike" onclick="voteMatchSwipe(false)">👎 לא בא</button>
+                <button class="match-btn-like" onclick="voteMatchSwipe(true)">👍 בא לי!</button>
             </div>
             <button id="nextUserBtn" class="btn-main" style="display:none; margin-top:15px; background:#ec4899;" onclick="startNextUserTurn()">העבר למשתתף הבא 📱➔</button>
             <button class="btn-secondary" style="margin-top: 12px; width: 100%;" onclick="closeMatchModal()">סגור</button>
+        </div>
+    </div>
+
+    <!-- Split Bill Calculator Modal -->
+    <div id="calcModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-top:0; color: #6366f1; font-size: 20px;">🧮 מחשבון פיצול חשבון</h2>
+            <p id="calcPlaceName" style="font-size:13px; font-weight:700; color:var(--text-sub); margin-bottom:15px;"></p>
+            
+            <div class="calc-input-group">
+                <span>סה"כ החשבון (₪):</span>
+                <input type="number" id="calcBillTotal" value="300" oninput="calculateSplit()">
+            </div>
+            <div class="calc-input-group">
+                <span>אחוז טיפ (%):</span>
+                <input type="number" id="calcTipPercent" value="12" oninput="calculateSplit()">
+            </div>
+            <div class="calc-input-group">
+                <span>מספר סועדים:</span>
+                <input type="number" id="calcPeopleCount" value="3" min="1" oninput="calculateSplit()">
+            </div>
+
+            <div style="background:var(--control-bg); padding:14px; border-radius:14px; margin:15px 0; border:1px solid var(--border-color);">
+                <p style="margin:0; font-size:12px; color:var(--text-sub);">כולל טיפ בסך: <b id="calcTipAmount">36 ₪</b></p>
+                <p style="margin:6px 0 0 0; font-size:18px; font-weight:900; color:#10b981;">תשלום לאדם: <span id="calcPerPerson">112 ₪</span></p>
+            </div>
+
+            <button class="btn-secondary" style="width:100%;" onclick="closeCalcModal()">סגור</button>
         </div>
     </div>
 
@@ -330,6 +375,18 @@
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
         }
 
+        /* Calculate Live Busy Level based on Current Hour */
+        function getBusyStatus() {
+            const hour = new Date().getHours();
+            if ((hour >= 12 && hour <= 14) || (hour >= 20 && hour <= 22)) {
+                return '<span class="busy-badge busy-red">🔥 עמוס ומפוצץ עכשיו</span>';
+            } else if ((hour >= 11 && hour <= 15) || (hour >= 19 && hour <= 23)) {
+                return '<span class="busy-badge busy-yellow">🟡 עומס בינוני עכשיו</span>';
+            } else {
+                return '<span class="busy-badge busy-green">🟢 פנוי ושקט עכשיו</span>';
+            }
+        }
+
         async function fetchPlaces() {
             const pos = marker.getLatLng();
             const response = await fetch('/api/search', {
@@ -344,6 +401,7 @@
         function renderCardHTML(place) {
             const isFav = favorites.some(f => f.id === place.id);
             const encodedPlace = encodeURIComponent(JSON.stringify(place));
+            const busyHtml = getBusyStatus();
 
             const imgTag = place.photo_url 
                 ? `<img src="${place.photo_url}" class="place-img" alt="${place.name}">`
@@ -359,14 +417,16 @@
                     <div class="card-body">
                         <h3 class="place-title">${place.name}</h3>
                         <p class="place-subtitle">${place.address}</p>
+                        ${busyHtml}
                         <div class="meta-row">
                             <div class="meta-item">⭐ ${place.google_rating}</div>
                             <div class="meta-item">📍 ${place.distance} מטר</div>
                             <div class="meta-item">🚶 ${place.walk_min} דק'</div>
                         </div>
                         <div class="card-actions">
-                            <a href="${place.maps_url}" target="_blank" class="btn-nav">🧭 ניווט ב-Maps</a>
+                            <a href="${place.maps_url}" target="_blank" class="btn-nav">🧭 ניווט</a>
                             <button class="btn-share" onclick="shareWhatsApp('${place.name}', '${place.maps_url}')">📲 שתף</button>
+                            <button class="btn-calc" onclick="openCalcModal('${place.name}')">🧮 חשבון</button>
                         </div>
                     </div>
                 </div>
@@ -525,23 +585,19 @@
             return b + c * (tc + -3 * ts + 3 * t);
         }
 
-        /* Improved Multi-User Match Mode Logic */
+        /* Swipe & Multi-User Match Mechanics */
         let totalUsers = 2;
         let currentUserTurn = 1;
         let matchIndex = 0;
         let matchPlaces = [];
-        let votesScores = {}; // מילון נקודות לכל מקום
+        let votesScores = {};
 
         async function setupMatchGroup() {
             if (fetchedPlacesList.length === 0) fetchedPlacesList = await fetchPlaces();
             if (fetchedPlacesList.length === 0) return alert('אין מקומות זמינים ברדיוס ל-Match.');
 
             const num = prompt('כמה משתתפים אתם בקבוצה?', '2');
-            if (!num || isNaN(num) || parseInt(num) < 2) {
-                totalUsers = 2;
-            } else {
-                totalUsers = parseInt(num);
-            }
+            totalUsers = (!num || isNaN(num) || parseInt(num) < 2) ? 2 : parseInt(num);
 
             matchPlaces = fetchedPlacesList.slice(0, 5);
             votesScores = {};
@@ -554,28 +610,27 @@
             document.getElementById('nextUserBtn').style.display = 'none';
             document.getElementById('matchActions').style.display = 'flex';
 
-            renderMatchCard();
+            renderSwipeCard();
         }
 
-        function renderMatchCard() {
-            const body = document.getElementById('matchCardBody');
+        function renderSwipeCard() {
+            const container = document.getElementById('swipeContainer');
             const progress = document.getElementById('matchProgress');
+            container.innerHTML = '';
 
             if (matchIndex >= matchPlaces.length) {
-                // סיום תור של משתתף יחיד
                 document.getElementById('matchActions').style.display = 'none';
 
                 if (currentUserTurn < totalUsers) {
                     progress.innerText = `תור משתתף ${currentUserTurn} מתוך ${totalUsers} הסתיים!`;
-                    body.innerHTML = `
-                        <div style="padding:15px 0;">
-                            <p style="font-size:16px; font-weight:800; color:var(--primary);">סיימת להצביע! 🎉</p>
+                    container.innerHTML = `
+                        <div style="padding:40px 10px; text-align:center;">
+                            <p style="font-size:18px; font-weight:800; color:var(--primary);">סיימת להצביע! 🎉</p>
                             <p style="font-size:13px; color:var(--text-sub);">אנא העבר את המכשיר למשתתף ${currentUserTurn + 1}.</p>
                         </div>
                     `;
                     document.getElementById('nextUserBtn').style.display = 'block';
                 } else {
-                    // סיום הצבעה של כולן - חישוב המנצח!
                     progress.innerText = `ההצבעה הקבוצתית הסתיימה! 🎉`;
                     let bestPlace = matchPlaces[0];
                     let maxVotes = -1;
@@ -587,12 +642,11 @@
                         }
                     });
 
-                    body.innerHTML = `
-                        <h3 style="color:#10b981; font-size:18px;">🎉 יש Match קבוצתי!</h3>
-                        <p style="font-size:13px; color:var(--text-sub); margin-bottom:10px;">
-                            המקום שקיבל הכי הרבה קולות מבין ${totalUsers} המשתתפים:
-                        </p>
-                        ${renderCardHTML(bestPlace)}
+                    container.innerHTML = `
+                        <div style="padding:10px 0;">
+                            <h3 style="color:#10b981; font-size:18px; margin-top:0;">🎉 יש Match קבוצתי!</h3>
+                            ${renderCardHTML(bestPlace)}
+                        </div>
                     `;
                     fireConfetti();
                 }
@@ -601,16 +655,58 @@
 
             progress.innerText = `משתתף ${currentUserTurn} מתוך ${totalUsers} | מקום ${matchIndex + 1} מתוך ${matchPlaces.length}`;
             const place = matchPlaces[matchIndex];
-            body.innerHTML = renderCardHTML(place);
+
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'swipe-card';
+            cardDiv.innerHTML = renderCardHTML(place);
+            container.appendChild(cardDiv);
+
+            initSwipeGesture(cardDiv);
         }
 
-        function voteMatch(isLike) {
+        function initSwipeGesture(card) {
+            let startX = 0, currentX = 0, isDragging = false;
+
+            const onStart = e => {
+                isDragging = true;
+                startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            };
+
+            const onMove = e => {
+                if (!isDragging) return;
+                currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                const diffX = currentX - startX;
+                card.style.transform = `translateX(${diffX}px) rotate(${diffX * 0.05}deg)`;
+            };
+
+            const onEnd = () => {
+                if (!isDragging) return;
+                isDragging = false;
+                const diffX = currentX - startX;
+
+                if (diffX > 80) {
+                    voteMatchSwipe(true);
+                } else if (diffX < -80) {
+                    voteMatchSwipe(false);
+                } else {
+                    card.style.transform = 'translateX(0) rotate(0)';
+                }
+            };
+
+            card.addEventListener('mousedown', onStart);
+            card.addEventListener('mousemove', onMove);
+            card.addEventListener('mouseup', onEnd);
+
+            card.addEventListener('touchstart', onStart);
+            card.addEventListener('touchmove', onMove);
+            card.addEventListener('touchend', onEnd);
+        }
+
+        function voteMatchSwipe(isLike) {
             const place = matchPlaces[matchIndex];
-            if (isLike) {
-                votesScores[place.id] = (votesScores[place.id] || 0) + 1;
-            }
+            if (isLike) votesScores[place.id] = (votesScores[place.id] || 0) + 1;
             matchIndex++;
-            renderMatchCard();
+            renderSwipeCard();
         }
 
         function startNextUserTurn() {
@@ -618,9 +714,30 @@
             matchIndex = 0;
             document.getElementById('nextUserBtn').style.display = 'none';
             document.getElementById('matchActions').style.display = 'flex';
-            renderMatchCard();
+            renderSwipeCard();
         }
 
+        /* Split Calculator Mechanics */
+        function openCalcModal(placeName) {
+            document.getElementById('calcPlaceName').innerText = placeName;
+            document.getElementById('calcModal').style.display = 'flex';
+            calculateSplit();
+        }
+
+        function calculateSplit() {
+            const bill = parseFloat(document.getElementById('calcBillTotal').value) || 0;
+            const tipPct = parseFloat(document.getElementById('calcTipPercent').value) || 0;
+            const people = parseInt(document.getElementById('calcPeopleCount').value) || 1;
+
+            const tipAmt = bill * (tipPct / 100);
+            const totalWithTip = bill + tipAmt;
+            const perPerson = totalWithTip / people;
+
+            document.getElementById('calcTipAmount').innerText = Math.round(tipAmt) + ' ₪';
+            document.getElementById('calcPerPerson').innerText = Math.round(perPerson) + ' ₪';
+        }
+
+        function closeCalcModal() { document.getElementById('calcModal').style.display = 'none'; }
         function closeModal() { document.getElementById('randomModal').style.display = 'none'; }
         function closeMatchModal() { document.getElementById('matchModal').style.display = 'none'; }
 
