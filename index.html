@@ -49,7 +49,7 @@
             transition: background 0.3s;
         }
 
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .brand-logo { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main); }
         .brand-logo span { color: var(--primary); }
 
@@ -61,26 +61,19 @@
             cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px;
         }
 
+        /* Quick Mood Pickers */
+        .mood-container { display: flex; gap: 6px; margin-bottom: 16px; }
+        .mood-btn {
+            flex: 1; padding: 8px 4px; border-radius: 12px; background: var(--control-bg);
+            border: 1px solid var(--border-color); color: var(--text-main); font-size: 11px;
+            font-weight: 800; cursor: pointer; text-align: center; transition: all 0.2s;
+        }
+        .mood-btn:hover { border-color: var(--primary); }
+
         .pills-wrapper { position: relative; display: flex; align-items: center; margin-bottom: 16px; }
-        
-        .pills-scroll {
-            display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 8px 0; width: 100%;
-            scrollbar-width: thin; scroll-behavior: smooth;
-        }
-
-        .scroll-btn {
-            background: var(--panel-bg); border: 1px solid var(--border-color);
-            color: var(--text-main); border-radius: 50%; width: 28px; height: 28px; display: flex;
-            align-items: center; justify-content: center; cursor: pointer;
-            font-size: 14px; font-weight: bold; z-index: 10; flex-shrink: 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .pill {
-            flex: 0 0 auto; padding: 8px 16px; border-radius: 30px; background: var(--pill-bg);
-            color: var(--text-sub); font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid transparent;
-            transition: all 0.2s ease; user-select: none;
-        }
+        .pills-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 8px 0; width: 100%; scrollbar-width: thin; scroll-behavior: smooth; }
+        .scroll-btn { background: var(--panel-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; font-weight: bold; z-index: 10; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .pill { flex: 0 0 auto; padding: 8px 16px; border-radius: 30px; background: var(--pill-bg); color: var(--text-sub); font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid transparent; transition: all 0.2s ease; user-select: none; }
         .pill.active { background: var(--primary); color: #fff; }
 
         .control-card { background: var(--control-bg); padding: 16px; border-radius: var(--border-radius); margin-bottom: 16px; border: 1px solid var(--border-color); }
@@ -88,45 +81,36 @@
 
         input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
 
-        .btn-main {
-            width: 100%; padding: 14px; background: var(--primary); color: white;
-            border: none; border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer;
-            box-shadow: 0 4px 14px rgba(0, 194, 232, 0.3); transition: transform 0.1s, background 0.2s;
-        }
+        .btn-main { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(0, 194, 232, 0.3); transition: transform 0.1s; }
         .btn-main:active { transform: scale(0.98); }
 
-        .btn-secondary {
-            padding: 8px 14px; background: var(--control-bg); color: var(--text-main);
-            border: 1px solid var(--border-color); border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer;
-        }
+        .btn-secondary { padding: 8px 14px; background: var(--control-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
 
         #map { flex: 1; height: 100vh; width: 100%; z-index: 1; }
 
-        .place-card {
-            background: var(--card-bg); border-radius: var(--border-radius); padding: 0;
-            margin-bottom: 20px; box-shadow: var(--card-shadow); overflow: hidden;
-            border: 1px solid var(--border-color); transition: transform 0.2s ease; position: relative;
-        }
+        .place-card { background: var(--card-bg); border-radius: var(--border-radius); padding: 0; margin-bottom: 20px; box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid var(--border-color); transition: transform 0.2s ease; position: relative; }
         .place-card:hover { transform: translateY(-2px); }
 
         .img-container { width: 100%; height: 160px; background: #334155; position: relative; }
         .place-img { width: 100%; height: 100%; object-fit: cover; }
 
-        .badge-score {
-            position: absolute; bottom: 12px; right: 12px; background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(8px); color: #fff; padding: 4px 12px; border-radius: 20px;
-            font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 4px;
-        }
+        .fav-btn { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+        .badge-score { position: absolute; bottom: 12px; right: 12px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 4px; }
 
         .card-body { padding: 16px; }
         .place-title { font-size: 18px; font-weight: 800; margin: 0 0 4px 0; color: var(--text-main); }
         .place-subtitle { font-size: 13px; color: var(--text-sub); margin: 0 0 12px 0; }
 
-        .meta-row { display: flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 700; color: var(--text-sub); }
-        .meta-item { display: flex; align-items: center; gap: 4px; background: var(--control-bg); padding: 4px 10px; border-radius: 8px; }
+        .meta-row { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--text-sub); flex-wrap: wrap; }
+        .meta-item { display: flex; align-items: center; gap: 4px; background: var(--control-bg); padding: 4px 8px; border-radius: 8px; }
 
         .card-actions { display: flex; gap: 8px; margin-top: 14px; }
-        .btn-nav { flex: 1; padding: 10px; background: var(--primary); color: white; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 800; font-size: 13px; }
+        .btn-nav { flex: 2; padding: 10px; background: var(--primary); color: white; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 800; font-size: 13px; }
+        .btn-share { flex: 1; padding: 10px; background: #22c55e; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; }
+
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-bg); color: var(--text-main); padding: 24px; border-radius: 20px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 
         @media (max-width: 768px) {
             body { flex-direction: column-reverse; }
@@ -148,6 +132,13 @@
                 </button>
                 <button class="btn-secondary" onclick="locateMe()">🎯 המיקום שלי</button>
             </div>
+        </div>
+
+        <!-- Quick Mood Pickers -->
+        <div class="mood-container">
+            <button class="mood-btn" onclick="quickMood('cafe')">🥐 קפה וספונטני</button>
+            <button class="mood-btn" onclick="quickMood('meat')">🥩 דייט לילי</button>
+            <button class="mood-btn" onclick="quickMood('hotel')">🏨 סופ"ש קרוב</button>
         </div>
 
         <div class="pills-wrapper">
@@ -182,6 +173,7 @@
 
         <button class="btn-main" onclick="searchRestaurants()">חפש בסביבה</button>
         <button class="btn-secondary" style="width:100%; margin-top:8px; padding:12px;" onclick="pickRandomFromAll()">🎲 תגריל לי מקום!</button>
+        <button class="btn-secondary" style="width:100%; margin-top:6px; padding:10px; background:#6366f1; color:white; border:none;" onclick="showFavorites()">❤️ המועדפים שלי (<span id="favCount">0</span>)</button>
 
         <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border-color);">
 
@@ -192,6 +184,14 @@
 
     <div id="map"></div>
 
+    <div id="randomModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-top:0; color: var(--primary);">🎉 המקום הנבחר עבורך!</h2>
+            <div id="modalBody"></div>
+            <button class="btn-main" style="margin-top: 15px; background: #64748b;" onclick="closeModal()">סגור</button>
+        </div>
+    </div>
+
     <script>
         const defaultLat = 32.0853;
         const defaultLng = 34.7818;
@@ -199,31 +199,40 @@
 
         const map = L.map('map', { zoomControl: false }).setView([defaultLat, defaultLng], 14);
 
-        /* מפות מודרניות מבית CartoDB */
-        const lightTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-            maxZoom: 19
-        });
-
-        const darkTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-            maxZoom: 19
-        });
+        const lightTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '© CARTO', maxZoom: 19 });
+        const darkTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO', maxZoom: 19 });
 
         lightTile.addTo(map);
 
         let radius = 2000;
         let minRating = 4.0;
         let restaurantMarkers = [];
+        let fetchedPlacesList = [];
+        let favorites = JSON.parse(localStorage.getItem('sabibi_favs') || '[]');
+
+        const icons = {
+            italian: '🍕', sushi: '🍣', meat: '🥩', vegan_only: '🥗', kosher: '📜', cafe: '☕',
+            bar: '🍹', hotel: '🏨', b_and_b: '🏡', attraction: '🎡', restaurant: '🍽️'
+        };
+
+        function updateFavCount() {
+            document.getElementById('favCount').innerText = favorites.length;
+        }
+        updateFavCount();
+
+        function createEmojiIcon(emoji) {
+            return L.divIcon({
+                html: `<div style="font-size: 20px; background: white; border-radius: 50%; padding: 4px; box-shadow: 0 3px 10px rgba(0,0,0,0.25); width: 34px; height: 34px; display:flex; align-items:center; justify-content:center; border: 2px solid var(--primary);">${emoji}</div>`,
+                className: '', iconSize: [34, 34], iconAnchor: [17, 17]
+            });
+        }
 
         let marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
         let circle = L.circle([defaultLat, defaultLng], { radius: radius, color: '#00c2e8', fillColor: '#00c2e8', fillOpacity: 0.12 }).addTo(map);
 
-        /* Toggle Dark Mode עם החלפת סגנון המפה בלייב */
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
-            
             document.getElementById('themeIcon').innerText = isDark ? '☀️' : '🌙';
             document.getElementById('themeText').innerText = isDark ? 'בהיר' : 'כהה';
 
@@ -237,21 +246,19 @@
         }
 
         const pillsContainer = document.getElementById('pillsContainer');
-        
-        function scrollPills(amount) {
-            pillsContainer.scrollBy({ left: amount, behavior: 'smooth' });
-        }
-
-        pillsContainer.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            pillsContainer.scrollLeft += e.deltaY;
-        });
+        function scrollPills(amount) { pillsContainer.scrollBy({ left: amount, behavior: 'smooth' }); }
+        pillsContainer.addEventListener('wheel', e => { e.preventDefault(); pillsContainer.scrollLeft += e.deltaY; });
 
         function selectCategory(genre, element) {
             document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-            element.classList.add('active');
+            if (element) element.classList.add('active');
             selectedGenre = genre;
             searchRestaurants();
+        }
+
+        function quickMood(genre) {
+            const pill = Array.from(document.querySelectorAll('.pill')).find(p => p.getAttribute('onclick').includes(`'${genre}'`));
+            selectCategory(genre, pill);
         }
 
         function updateCircleLocation(latlng) {
@@ -283,59 +290,93 @@
             document.getElementById('ratingVal').innerText = Number(minRating).toFixed(1) + ' ⭐';
         });
 
+        function toggleFavorite(placeJson) {
+            const place = JSON.parse(decodeURIComponent(placeJson));
+            const idx = favorites.findIndex(f => f.id === place.id);
+            if (idx >= 0) {
+                favorites.splice(idx, 1);
+            } else {
+                favorites.push(place);
+            }
+            localStorage.setItem('sabibi_favs', JSON.stringify(favorites));
+            updateFavCount();
+            searchRestaurants();
+        }
+
+        function shareWhatsApp(name, mapsUrl) {
+            const text = encodeURIComponent(`היי! מצאתי ב-Sabibi את "${name}":\n${mapsUrl}`);
+            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+        }
+
+        async function fetchPlaces() {
+            const pos = marker.getLatLng();
+            const response = await fetch('/api/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lat: pos.lat, lng: pos.lng, radius: radius, genre: selectedGenre, min_rating: minRating })
+            });
+            const data = await response.json();
+            return data.places || [];
+        }
+
+        function renderCardHTML(place) {
+            const isFav = favorites.some(f => f.id === place.id);
+            const encodedPlace = encodeURIComponent(JSON.stringify(place));
+
+            const imgTag = place.photo_url 
+                ? `<img src="${place.photo_url}" class="place-img" alt="${place.name}">`
+                : `<div style="width:100%;height:100%;background:var(--control-bg);display:flex;align-items:center;justify-content:center;font-size:32px;">📍</div>`;
+
+            return `
+                <div class="place-card">
+                    <div class="img-container">
+                        ${imgTag}
+                        <button class="fav-btn" onclick="toggleFavorite('${encodedPlace}')">${isFav ? '❤️' : '🤍'}</button>
+                        <div class="badge-score">🏆 ${place.combined_score}/100</div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="place-title">${place.name}</h3>
+                        <p class="place-subtitle">${place.address}</p>
+                        <div class="meta-row">
+                            <div class="meta-item">⭐ ${place.google_rating}</div>
+                            <div class="meta-item">📍 ${place.distance} מטר</div>
+                            <div class="meta-item">🚶 ${place.walk_min} דק'</div>
+                        </div>
+                        <div class="card-actions">
+                            <a href="${place.maps_url}" target="_blank" class="btn-nav">🧭 ניווט ב-Maps</a>
+                            <button class="btn-share" onclick="shareWhatsApp('${place.name}', '${place.maps_url}')">📲 שתף</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         async function searchRestaurants() {
             const resultsDiv = document.getElementById('results');
             restaurantMarkers.forEach(m => map.removeLayer(m));
             restaurantMarkers = [];
             resultsDiv.innerHTML = '<p style="color: var(--primary); font-weight: 700; text-align: center;">מחפש את המקומות הכי שווים...</p>';
 
-            const pos = marker.getLatLng();
             try {
-                const response = await fetch('/api/search', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        lat: pos.lat, 
-                        lng: pos.lng, 
-                        radius: radius, 
-                        genre: selectedGenre,
-                        min_rating: minRating
-                    })
-                });
+                fetchedPlacesList = await fetchPlaces();
 
-                const data = await response.json();
-                const places = data.places || [];
-
-                if (places.length > 0) {
+                if (fetchedPlacesList.length > 0) {
                     resultsDiv.innerHTML = '';
-                    places.forEach(place => {
-                        const resMarker = L.marker([place.lat, place.lng]).addTo(map);
+                    fetchedPlacesList.forEach(place => {
+                        const emoji = icons[selectedGenre] || icons.restaurant;
+                        const resMarker = L.marker([place.lat, place.lng], { icon: createEmojiIcon(emoji) })
+                            .addTo(map)
+                            .bindPopup(`
+                                <div style="text-align:right; font-family:'Heebo',sans-serif;">
+                                    <h4 style="margin:0 0 4px 0; color:#0f172a;">${place.name}</h4>
+                                    <p style="margin:0; font-size:12px; color:#64748b;">${place.address}</p>
+                                    <p style="margin:4px 0 0 0; font-size:12px; font-weight:bold; color:#00c2e8;">🏆 מדד סביבי: ${place.combined_score}/100</p>
+                                    <a href="${place.maps_url}" target="_blank" style="display:inline-block; margin-top:6px; font-size:12px; color:#2563eb; font-weight:bold;">🧭 נווט בגוגל מפות</a>
+                                </div>
+                            `);
+
                         restaurantMarkers.push(resMarker);
-
-                        const imgTag = place.photo_url 
-                            ? `<img src="${place.photo_url}" class="place-img" alt="${place.name}">`
-                            : `<div style="width:100%;height:100%;background:var(--control-bg);display:flex;align-items:center;justify-content:center;font-size:32px;">📍</div>`;
-
-                        resultsDiv.innerHTML += `
-                            <div class="place-card">
-                                <div class="img-container">
-                                    ${imgTag}
-                                    <div class="badge-score">🏆 ${place.combined_score}/100</div>
-                                </div>
-                                <div class="card-body">
-                                    <h3 class="place-title">${place.name}</h3>
-                                    <p class="place-subtitle">${place.address}</p>
-                                    <div class="meta-row">
-                                        <div class="meta-item">⭐ ${place.google_rating}</div>
-                                        <div class="meta-item">📍 ${place.distance} מטר</div>
-                                        <div class="meta-item">🚶 ${place.walk_min} דק'</div>
-                                    </div>
-                                    <div class="card-actions">
-                                        <a href="${place.maps_url}" target="_blank" class="btn-nav">🧭 ניווט ב-Maps</a>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
+                        resultsDiv.innerHTML += renderCardHTML(place);
                     });
                 } else {
                     resultsDiv.innerHTML = '<p style="text-align:center; color:var(--text-sub);">לא נמצאו מקומות ברדיוס ובדירוג הזה.</p>';
@@ -343,6 +384,51 @@
             } catch (e) {
                 resultsDiv.innerHTML = '<p style="text-align:center; color:#ef4444;">שגיאה בתקשורת עם השרת.</p>';
             }
+        }
+
+        function showFavorites() {
+            const resultsDiv = document.getElementById('results');
+            restaurantMarkers.forEach(m => map.removeLayer(m));
+            restaurantMarkers = [];
+
+            if (favorites.length === 0) {
+                resultsDiv.innerHTML = '<p style="text-align:center; color:var(--text-sub);">אין לך עדיין מועדפים שמורים.</p>';
+                return;
+            }
+
+            resultsDiv.innerHTML = `<h3 style="font-size:14px; margin-bottom:12px;">❤️ המועדפים השמורים שלך (${favorites.length}):</h3>`;
+            favorites.forEach(place => {
+                const emoji = icons[place.genre] || icons.restaurant;
+                const resMarker = L.marker([place.lat, place.lng], { icon: createEmojiIcon(emoji) }).addTo(map);
+                restaurantMarkers.push(resMarker);
+                resultsDiv.innerHTML += renderCardHTML(place);
+            });
+        }
+
+        async function pickRandomFromAll() {
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = '<p style="color: var(--primary); font-weight:700;">מגריל מקום ברדיוס...</p>';
+            document.getElementById('randomModal').style.display = 'flex';
+
+            try {
+                if (fetchedPlacesList.length === 0) {
+                    fetchedPlacesList = await fetchPlaces();
+                }
+
+                if (fetchedPlacesList.length === 0) {
+                    modalBody.innerHTML = '<p style="color: #ef4444;">לא נמצאו תוצאות ברדיוס להגרלה.</p>';
+                    return;
+                }
+
+                const randomPlace = fetchedPlacesList[Math.floor(Math.random() * fetchedPlacesList.length)];
+                modalBody.innerHTML = renderCardHTML(randomPlace);
+            } catch (error) {
+                modalBody.innerHTML = '<p style="color: #ef4444;">שגיאה בתקשורת עם השרת.</p>';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('randomModal').style.display = 'none';
         }
 
         setTimeout(() => { map.invalidateSize(); }, 300);
