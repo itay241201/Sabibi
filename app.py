@@ -1,9 +1,10 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import requests
 import math
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='.')
 CORS(app)
 
 GOOGLE_API_KEY = "AIzaSyDi4k9JXzYIWgmG5VE6F-axQ6-TJY5fG6M"
@@ -26,6 +27,11 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     a = math.sin(delta_phi / 2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2)**2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
+
+# הגשת עמוד הבית הראשי
+@app.route('/')
+def serve_index():
+    return send_from_directory('.', 'index.html')
 
 @app.route('/api/search', methods=['POST'])
 def search_places():
@@ -71,16 +77,14 @@ def search_places():
             user_ratings_total = place.get("user_ratings_total", 0)
             price_lvl = place.get("price_level")
 
-            # הגדרת רמת מחיר
             if price_lvl is not None and price_lvl > 0:
                 price_display = "₪" * int(price_lvl)
             else:
-                price_display = "₪₪"  # ברירת מחדל ממוצעת אם לא מוגדר בגוגל
+                price_display = "₪₪"
 
             if google_rating >= min_rating:
                 place_id = place.get("place_id")
                 
-                # חישוב מדד סביבי מתוך 100
                 base_score = google_rating * 16
 
                 if user_ratings_total >= 2500:
@@ -120,5 +124,5 @@ def search_places():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
-    print("🚀 שרת Sabibi רץ בכתובת http://127.0.0.1:5000")
-    app.run(port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
