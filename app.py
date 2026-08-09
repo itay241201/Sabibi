@@ -9,22 +9,20 @@ CORS(app)
 
 GOOGLE_API_KEY = "AIzaSyDi4k9JXzYIWgmG5VE6F-axQ6-TJY5fG6M"
 
-# מילון סגנונות מורחב - כולל מסעדות ומלונות
+# מילון סגנונות מורחב
 GENRE_MAP = {
-    # מסעדות
     "restaurant": {"type": "restaurant", "keyword": "restaurant"},
     "italian": {"type": "restaurant", "keyword": "italian restaurant pizza"},
     "sushi": {"type": "restaurant", "keyword": "sushi asian restaurant"},
     "meat": {"type": "restaurant", "keyword": "steakhouse meat restaurant"},
     "vegan": {"type": "restaurant", "keyword": "vegan vegetarian restaurant"},
     "cafe": {"type": "cafe", "keyword": "cafe coffee shop"},
-    # מלונות ומקומות לינה
     "hotel": {"type": "lodging", "keyword": "hotel resort boutique hotel"},
     "b_and_b": {"type": "lodging", "keyword": "zimer bed and breakfast guest house"}
 }
 
 def calculate_distance(lat1, lon1, lat2, lon2):
-    R = 6371000  # רדיוס במטרים
+    R = 6371000
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     delta_phi = math.radians(lat2 - lat1)
     delta_lambda = math.radians(lon2 - lon1)
@@ -47,6 +45,7 @@ def search_places():
     min_rating = float(data.get('min_rating', 0))
     open_now = data.get('open_now', False)
 
+    # שליפת המידע הנכון מתוך המילון
     genre_info = GENRE_MAP.get(genre, {"type": "restaurant", "keyword": "restaurant"})
 
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
@@ -54,9 +53,11 @@ def search_places():
         "location": f"{center_lat},{center_lng}",
         "radius": max_radius,
         "type": genre_info["type"],
-        "keyword": genre_info["keyword"],
         "key": GOOGLE_API_KEY
     }
+
+    if genre != "restaurant":
+        params["keyword"] = genre_info["keyword"]
         
     if open_now and genre_info["type"] == "restaurant":
         params["opennow"] = "true"
@@ -87,7 +88,6 @@ def search_places():
             if google_rating >= min_rating:
                 place_id = place.get("place_id")
                 
-                # חישוב מדד סביבי (משוכלל)
                 base_score = google_rating * 16
 
                 if user_ratings_total >= 2500:
