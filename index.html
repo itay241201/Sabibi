@@ -14,12 +14,12 @@
         :root {
             --bg-main: #fffaf7;
             --panel-bg: rgba(255, 255, 255, 0.98);
-            --primary: #FF6B35; /* כתום מנדרינה מדויק */
+            --primary: #FF6B35; /* כתום מנדרינה */
             --primary-hover: #e85a26;
             --text-main: #0f172a;
             --text-sub: #64748b;
             --card-bg: #ffffff;
-            --card-shadow: 0 10px 25px -5px rgba(255, 107, 53, 0.12);
+            --card-shadow: 0 10px 25px -5px rgba(255, 107, 53, 0.08);
             --control-bg: #fff1eb;
             --border-color: #ffd8cb;
             --pill-bg: #ffe6dd;
@@ -51,7 +51,7 @@
             transition: background 0.3s;
         }
 
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .brand-logo { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main); }
         .brand-logo span { color: var(--primary); }
 
@@ -63,32 +63,37 @@
             cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px;
         }
 
-        .google-btn {
-            background: #FF6B35; color: white; border: none; padding: 8px 12px;
-            border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 700;
-            display: flex; align-items: center; gap: 6px;
-            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+        .sync-btn {
+            background: transparent; color: var(--primary); border: 1.5px solid var(--primary);
+            padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 800;
+            display: flex; align-items: center; gap: 6px; transition: all 0.2s;
         }
+        .sync-btn:hover { background: var(--control-bg); }
 
-        .pills-wrapper { position: relative; display: flex; align-items: center; margin-bottom: 16px; }
+        .pills-wrapper { position: relative; display: flex; align-items: center; margin-bottom: 20px; }
         .pills-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 8px 0; width: 100%; scrollbar-width: thin; scroll-behavior: smooth; }
         .scroll-btn { background: var(--panel-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; font-weight: bold; z-index: 10; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .pill { flex: 0 0 auto; padding: 8px 16px; border-radius: 30px; background: var(--pill-bg); color: var(--text-sub); font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid transparent; transition: all 0.2s ease; user-select: none; }
         .pill.active { background: var(--primary); color: #fff; }
 
-        .control-card { background: var(--control-bg); padding: 16px; border-radius: var(--border-radius); margin-bottom: 16px; border: 1px solid var(--border-color); }
+        .control-card { background: var(--control-bg); padding: 18px; border-radius: var(--border-radius); margin-bottom: 20px; border: 1px solid var(--border-color); }
         .control-label { font-size: 13px; font-weight: 700; color: var(--text-sub); display: flex; justify-content: space-between; margin-bottom: 8px; }
 
         select.sort-select {
             width: 100%; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color);
-            background: var(--card-bg); color: var(--text-main); font-weight: 700; font-size: 13px; margin-bottom: 14px; outline: none;
+            background: var(--card-bg); color: var(--text-main); font-weight: 700; font-size: 13px; margin-bottom: 16px; outline: none;
         }
 
         input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
 
+        /* Primary CTA Button */
         .btn-main { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(255, 107, 53, 0.35); transition: transform 0.1s, background 0.2s; }
         .btn-main:hover { background: var(--primary-hover); }
         .btn-main:active { transform: scale(0.98); }
+
+        /* Secondary Outlined Buttons */
+        .btn-outlined { flex: 1; padding: 10px; background: transparent; color: var(--primary); border: 1.5px solid var(--primary); border-radius: 12px; font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.2s; }
+        .btn-outlined:hover { background: var(--control-bg); }
 
         .btn-secondary { padding: 8px 14px; background: var(--control-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
 
@@ -100,22 +105,23 @@
         .img-container { width: 100%; height: 150px; background: #334155; position: relative; }
         .place-img { width: 100%; height: 100%; object-fit: cover; }
 
-        .fav-btn { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .fav-btn { position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
-        .badge-score { position: absolute; bottom: 12px; right: 12px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 4px; }
+        .badge-score { position: absolute; bottom: 10px; right: 10px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 4px; }
         
-        .badge-status { position: absolute; top: 12px; right: 12px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; backdrop-filter: blur(8px); }
+        .badge-status { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; backdrop-filter: blur(8px); }
         .status-open { background: rgba(16, 185, 129, 0.9); color: white; }
         .status-closed { background: rgba(239, 68, 68, 0.9); color: white; }
+        .status-unknown { background: rgba(100, 116, 139, 0.8); color: white; }
 
-        .card-body { padding: 14px; }
+        .card-body { padding: 16px; }
         .place-title { font-size: 17px; font-weight: 800; margin: 0 0 4px 0; color: var(--text-main); }
-        .place-subtitle { font-size: 12px; color: var(--text-sub); margin: 0 0 8px 0; }
+        .place-subtitle { font-size: 12px; color: var(--text-sub); margin: 0 0 10px 0; }
 
-        .meta-row { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--text-sub); flex-wrap: wrap; margin-bottom: 8px; }
+        .meta-row { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--text-sub); flex-wrap: wrap; margin-bottom: 12px; }
         .meta-item { display: flex; align-items: center; gap: 4px; background: var(--control-bg); padding: 4px 8px; border-radius: 8px; }
 
-        .card-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+        .card-actions { display: flex; gap: 8px; margin-top: 10px; }
         .btn-nav { flex: 2; padding: 10px; background: var(--primary); color: white; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 800; font-size: 12px; }
         .btn-share { flex: 1; padding: 10px; background: #22c55e; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; }
         .btn-calc { flex: 1; padding: 10px; background: #e85a26; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; }
@@ -154,13 +160,13 @@
         <div class="header-row">
             <div class="brand-logo">Sabibi<span>.</span></div>
             <div class="header-actions">
-                <button id="googleAuthBtn" class="google-btn" onclick="handleGoogleAuth()">
-                    <span>👤</span> <span id="googleBtnText">סנכרון נייד/מחשב</span>
+                <button id="googleAuthBtn" class="sync-btn" onclick="handleGoogleAuth()">
+                    <span>📲</span> <span id="googleBtnText">סנכרון נייד/מחשב</span>
                 </button>
                 <button class="theme-toggle-btn" onclick="toggleDarkMode()">
                     <span id="themeIcon">🌙</span> <span id="themeText">כהה</span>
                 </button>
-                <button class="btn-secondary" onclick="locateMe()">🎯 המיקום שלי</button>
+                <button class="btn-secondary" onclick="locateMe()">🎯</button>
             </div>
         </div>
 
@@ -206,12 +212,12 @@
 
         <button class="btn-main" onclick="searchRestaurants()">חפש בסביבה</button>
         
-        <div style="display:flex; gap:6px; margin-top:8px;">
-            <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #FF6B35, #d94b18); color:white; border:none;" onclick="openWheelModal()">🎡 גלגל המזל</button>
-            <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #f87443, #c83d0d); color:white; border:none;" onclick="setupMatchGroup()">👥 מצב Swipe Match</button>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+            <button class="btn-outlined" onclick="openWheelModal()">🎡 גלגל המזל</button>
+            <button class="btn-outlined" onclick="setupMatchGroup()">👥 Swipe Match</button>
         </div>
 
-        <button class="btn-secondary" style="width:100%; margin-top:6px; padding:10px; background:#e85a26; color:white; border:none;" onclick="showFavorites()">❤️ המועדפים שלי (<span id="favCount">0</span>)</button>
+        <button class="btn-secondary" style="width:100%; margin-top:10px; padding:10px; background:var(--control-bg); color:var(--primary); border:1px solid var(--border-color); font-weight:800;" onclick="showFavorites()">❤️ המועדפים שלי (<span id="favCount">0</span>)</button>
 
         <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border-color);">
 
@@ -308,18 +314,29 @@
         function updateFavCount() { document.getElementById('favCount').innerText = favorites.length; }
         updateFavCount();
 
-        /* סנכרון מהיר בין נייד למחשב */
+        /* טעינת משתמש שמור בסנכרון בעלייה */
+        const savedUser = localStorage.getItem('sabibi_user_email');
+        if (savedUser) {
+            googleUser = { email: savedUser, given_name: savedUser.split('@')[0] };
+            document.getElementById('googleBtnText').innerText = googleUser.given_name;
+            syncFavoritesWithCloud();
+        }
+
+        /* סנכרון דו-כיווני אמין בין מכשירים */
         function handleGoogleAuth() {
             if (googleUser) {
-                googleUser = null;
-                document.getElementById('googleBtnText').innerText = 'סנכרון נייד/מחשב';
-                alert('התנתקת בהצלחה.');
+                if (confirm('האם ברצונך להתנתק מזהה הסנכרון?')) {
+                    googleUser = null;
+                    localStorage.removeItem('sabibi_user_email');
+                    document.getElementById('googleBtnText').innerText = 'סנכרון נייד/מחשב';
+                }
                 return;
             }
 
             const email = prompt('הכנס כתובת Gmail / מזהה אישי לסנכרון מועדפים בין המכשירים שלך:');
             if (email && email.includes('@')) {
-                googleUser = { email: email, given_name: email.split('@')[0] };
+                googleUser = { email: email.toLowerCase().trim(), given_name: email.split('@')[0] };
+                localStorage.setItem('sabibi_user_email', googleUser.email);
                 document.getElementById('googleBtnText').innerText = googleUser.given_name;
                 syncFavoritesWithCloud();
             }
@@ -334,13 +351,21 @@
                     body: JSON.stringify({ userId: googleUser.email, favorites: favorites })
                 });
                 const data = await res.json();
-                if (data.favorites) {
-                    favorites = data.favorites;
+                
+                // מיזוג מועדפים שנשמרו בענן עם המקומיים
+                if (data.favorites && Array.isArray(data.favorites)) {
+                    const combined = [...favorites];
+                    data.favorites.forEach(cloudItem => {
+                        if (!combined.some(f => f.id === cloudItem.id)) {
+                            combined.push(cloudItem);
+                        }
+                    });
+                    favorites = combined;
                     localStorage.setItem('sabibi_favs', JSON.stringify(favorites));
                     updateFavCount();
                 }
             } catch (e) {
-                console.log('סנכרון ענן מוכן למשלוח');
+                console.log('סנכרון ענני פעיל מקומית');
             }
         }
 
@@ -443,11 +468,15 @@
             const isFoodCategory = !['hotel', 'b_and_b', 'attraction'].includes(place.genre || selectedGenre);
             const calcBtnHtml = isFoodCategory ? `<button class="btn-calc" onclick="openCalcModal('${place.name}')">🧮 חשבון</button>` : '';
 
-            // תג פתוח עכשיו / סגור עכשיו
-            const isOpen = place.open_now !== undefined ? place.open_now : true;
-            const statusHtml = isOpen 
-                ? `<div class="badge-status status-open">🟢 פתוח עכשיו</div>` 
-                : `<div class="badge-status status-closed">🔴 סגור עכשיו</div>`;
+            // חישוב מדויק של פתוח/סגור עכשיו
+            let statusHtml = '';
+            if (place.open_now === true) {
+                statusHtml = `<div class="badge-status status-open">🟢 פתוח עכשיו</div>`;
+            } else if (place.open_now === false) {
+                statusHtml = `<div class="badge-status status-closed">🔴 סגור עכשיו</div>`;
+            } else {
+                statusHtml = `<div class="badge-status status-unknown">⚪ שעות לא מעודכנות</div>`;
+            }
 
             return `
                 <div class="place-card">
@@ -492,7 +521,11 @@
                 resultsDiv.innerHTML = '';
                 fetchedPlacesList.forEach(place => {
                     const emoji = icons[selectedGenre] || icons.restaurant;
-                    const statusTxt = (place.open_now !== false) ? '🟢 פתוח עכשיו' : '🔴 סגור עכשיו';
+                    
+                    let statusTxt = '⚪ שעות לא מעודכנות';
+                    if (place.open_now === true) statusTxt = '🟢 פתוח עכשיו';
+                    else if (place.open_now === false) statusTxt = '🔴 סגור עכשיו';
+
                     const resMarker = L.marker([place.lat, place.lng], { icon: createEmojiIcon(emoji) })
                         .addTo(map)
                         .bindPopup(`
