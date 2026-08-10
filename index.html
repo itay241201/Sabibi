@@ -12,29 +12,30 @@
 
     <style>
         :root {
-            --bg-main: #f8fafc;
+            --bg-main: #fffaf7;
             --panel-bg: rgba(255, 255, 255, 0.98);
-            --primary: #00c2e8;
+            --primary: #FF6B35; /* כתום מנדרינה מדויק */
+            --primary-hover: #e85a26;
             --text-main: #0f172a;
             --text-sub: #64748b;
             --card-bg: #ffffff;
-            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            --control-bg: #f8fafc;
-            --border-color: #f1f5f9;
-            --pill-bg: #f1f5f9;
+            --card-shadow: 0 10px 25px -5px rgba(255, 107, 53, 0.12);
+            --control-bg: #fff1eb;
+            --border-color: #ffd8cb;
+            --pill-bg: #ffe6dd;
             --border-radius: 18px;
         }
 
         body.dark-mode {
-            --bg-main: #0f172a;
-            --panel-bg: rgba(30, 41, 59, 0.98);
+            --bg-main: #140d0a;
+            --panel-bg: rgba(28, 20, 16, 0.98);
             --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --card-bg: #1e293b;
-            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            --control-bg: #334155;
-            --border-color: #334155;
-            --pill-bg: #334155;
+            --text-sub: #a89e98;
+            --card-bg: #211612;
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            --control-bg: #2e1e18;
+            --border-color: #422a21;
+            --pill-bg: #422a21;
         }
 
         * { box-sizing: border-box; font-family: 'Heebo', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -63,9 +64,10 @@
         }
 
         .google-btn {
-            background: #4285f4; color: white; border: none; padding: 8px 12px;
+            background: #FF6B35; color: white; border: none; padding: 8px 12px;
             border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 700;
             display: flex; align-items: center; gap: 6px;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
         }
 
         .pills-wrapper { position: relative; display: flex; align-items: center; margin-bottom: 16px; }
@@ -84,7 +86,8 @@
 
         input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
 
-        .btn-main { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(0, 194, 232, 0.3); transition: transform 0.1s; }
+        .btn-main { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(255, 107, 53, 0.35); transition: transform 0.1s, background 0.2s; }
+        .btn-main:hover { background: var(--primary-hover); }
         .btn-main:active { transform: scale(0.98); }
 
         .btn-secondary { padding: 8px 14px; background: var(--control-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
@@ -115,7 +118,7 @@
         .card-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
         .btn-nav { flex: 2; padding: 10px; background: var(--primary); color: white; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 800; font-size: 12px; }
         .btn-share { flex: 1; padding: 10px; background: #22c55e; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; }
-        .btn-calc { flex: 1; padding: 10px; background: #6366f1; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; }
+        .btn-calc { flex: 1; padding: 10px; background: #e85a26; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; }
 
         /* Modal Layout */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 16px; }
@@ -204,11 +207,11 @@
         <button class="btn-main" onclick="searchRestaurants()">חפש בסביבה</button>
         
         <div style="display:flex; gap:6px; margin-top:8px;">
-            <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color:white; border:none;" onclick="openWheelModal()">🎡 גלגל המזל</button>
-            <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #ec4899, #be185d); color:white; border:none;" onclick="setupMatchGroup()">👥 מצב Swipe Match</button>
+            <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #FF6B35, #d94b18); color:white; border:none;" onclick="openWheelModal()">🎡 גלגל המזל</button>
+            <button class="btn-secondary" style="flex:1; background: linear-gradient(135deg, #f87443, #c83d0d); color:white; border:none;" onclick="setupMatchGroup()">👥 מצב Swipe Match</button>
         </div>
 
-        <button class="btn-secondary" style="width:100%; margin-top:6px; padding:10px; background:#6366f1; color:white; border:none;" onclick="showFavorites()">❤️ המועדפים שלי (<span id="favCount">0</span>)</button>
+        <button class="btn-secondary" style="width:100%; margin-top:6px; padding:10px; background:#e85a26; color:white; border:none;" onclick="showFavorites()">❤️ המועדפים שלי (<span id="favCount">0</span>)</button>
 
         <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border-color);">
 
@@ -235,7 +238,7 @@
 
     <div id="matchModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-top:0; color: #ec4899; font-size: 20px;">👥 Swipe Match</h2>
+            <h2 style="margin-top:0; color: #FF6B35; font-size: 20px;">👥 Swipe Match</h2>
             <p id="matchProgress" style="font-size:12px; font-weight:800; color:var(--primary); margin:0 0 6px 0;"></p>
             <p style="font-size:11px; color:var(--text-sub); margin:0 0 10px 0;">החלק ימינה לקבלת 👍 או שמאלה ל-👎</p>
             
@@ -245,7 +248,7 @@
                 <button class="match-btn-dislike" onclick="voteMatchSwipe(false)">👎 לא בא</button>
                 <button class="match-btn-like" onclick="voteMatchSwipe(true)">👍 בא לי!</button>
             </div>
-            <button id="nextUserBtn" class="btn-main" style="display:none; margin-top:15px; background:#ec4899;" onclick="startNextUserTurn()">העבר למשתתף הבא 📱➔</button>
+            <button id="nextUserBtn" class="btn-main" style="display:none; margin-top:15px; background:#FF6B35;" onclick="startNextUserTurn()">העבר למשתתף הבא 📱➔</button>
             <button class="btn-secondary" style="margin-top: 12px; width: 100%;" onclick="closeMatchModal()">סגור</button>
         </div>
     </div>
@@ -253,7 +256,7 @@
     <!-- Split Bill Calculator Modal -->
     <div id="calcModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-top:0; color: #6366f1; font-size: 20px;">🧮 מחשבון פיצול חשבון</h2>
+            <h2 style="margin-top:0; color: #e85a26; font-size: 20px;">🧮 מחשבון פיצול חשבון</h2>
             <p id="calcPlaceName" style="font-size:13px; font-weight:700; color:var(--text-sub); margin-bottom:15px;"></p>
             
             <div class="calc-input-group">
@@ -343,13 +346,13 @@
 
         function createEmojiIcon(emoji) {
             return L.divIcon({
-                html: `<div style="font-size: 20px; background: white; border-radius: 50%; padding: 4px; box-shadow: 0 3px 10px rgba(0,0,0,0.25); width: 34px; height: 34px; display:flex; align-items:center; justify-content:center; border: 2px solid var(--primary);">${emoji}</div>`,
+                html: `<div style="font-size: 20px; background: white; border-radius: 50%; padding: 4px; box-shadow: 0 3px 10px rgba(255,107,53,0.3); width: 34px; height: 34px; display:flex; align-items:center; justify-content:center; border: 2px solid var(--primary);">${emoji}</div>`,
                 className: '', iconSize: [34, 34], iconAnchor: [17, 17]
             });
         }
 
         let marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
-        let circle = L.circle([defaultLat, defaultLng], { radius: radius, color: '#00c2e8', fillColor: '#00c2e8', fillOpacity: 0.12 }).addTo(map);
+        let circle = L.circle([defaultLat, defaultLng], { radius: radius, color: '#FF6B35', fillColor: '#FF6B35', fillOpacity: 0.12 }).addTo(map);
 
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
@@ -497,8 +500,8 @@
                                 <h4 style="margin:0 0 4px 0; color:#0f172a;">${place.name}</h4>
                                 <p style="margin:0; font-size:12px; color:#64748b;">${place.address}</p>
                                 <p style="margin:4px 0 0 0; font-size:11px; font-weight:bold;">${statusTxt}</p>
-                                <p style="margin:2px 0 0 0; font-size:12px; font-weight:bold; color:#00c2e8;">🏆 מדד סביבי: ${place.combined_score}/100</p>
-                                <a href="${place.maps_url}" target="_blank" style="display:inline-block; margin-top:6px; font-size:12px; color:#2563eb; font-weight:bold;">🧭 נווט בגוגל מפות</a>
+                                <p style="margin:2px 0 0 0; font-size:12px; font-weight:bold; color:#FF6B35;">🏆 מדד סביבי: ${place.combined_score}/100</p>
+                                <a href="${place.maps_url}" target="_blank" style="display:inline-block; margin-top:6px; font-size:12px; color:#FF6B35; font-weight:bold;">🧭 נווט בגוגל מפות</a>
                             </div>
                         `);
 
@@ -543,14 +546,14 @@
             });
         }
 
-        /* Wheel Mechanics */
+        /* Wheel Mechanics - Mandarin Palette (#FF6B35) */
         let wheelItems = [];
         let startAngle = 0;
         let spinTimeout = null;
         let spinAngleStart = 10;
         let spinTime = 0;
         let spinTimeTotal = 0;
-        const colors = ['#00c2e8', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
+        const colors = ['#FF6B35', '#f8561d', '#e84910', '#ff8457', '#d63c05', '#f96129'];
 
         async function openWheelModal() {
             document.getElementById('modalBody').innerHTML = '';
