@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
@@ -101,6 +100,10 @@
         .fav-btn { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
         .badge-score { position: absolute; bottom: 12px; right: 12px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 4px; }
+        
+        .badge-status { position: absolute; top: 12px; right: 12px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; backdrop-filter: blur(8px); }
+        .status-open { background: rgba(16, 185, 129, 0.9); color: white; }
+        .status-closed { background: rgba(239, 68, 68, 0.9); color: white; }
 
         .card-body { padding: 14px; }
         .place-title { font-size: 17px; font-weight: 800; margin: 0 0 4px 0; color: var(--text-main); }
@@ -149,7 +152,7 @@
             <div class="brand-logo">Sabibi<span>.</span></div>
             <div class="header-actions">
                 <button id="googleAuthBtn" class="google-btn" onclick="handleGoogleAuth()">
-                    <span>👤</span> <span id="googleBtnText">התחבר עם גוגל</span>
+                    <span>👤</span> <span id="googleBtnText">סנכרון נייד/מחשב</span>
                 </button>
                 <button class="theme-toggle-btn" onclick="toggleDarkMode()">
                     <span id="themeIcon">🌙</span> <span id="themeText">כהה</span>
@@ -169,7 +172,7 @@
                 <div class="pill" onclick="selectCategory('meat', this)">🥩 בשרים</div>
                 <div class="pill" onclick="selectCategory('cafe', this)">☕ קפה</div>
                 <div class="pill" onclick="selectCategory('bar', this)">🍹 ברים</div>
-                <div class="pill" onclick="selectCategory('hotel', this)">🏨 מלונות</div>
+                <div class="pill" onclick="selectCategory('hotel', this)">🛎️ מלונות</div>
                 <div class="pill" onclick="selectCategory('attraction', this)">🎡 אטרקציות</div>
             </div>
             <button class="scroll-btn" onclick="scrollPills(120)" style="margin-right: 4px;">‹</button>
@@ -296,34 +299,27 @@
 
         const icons = {
             italian: '🍕', sushi: '🍣', meat: '🥩', fish: '🐟', vegan_only: '🥗', kosher: '📜', cafe: '☕',
-            bar: '🍹', hotel: '🏨', b_and_b: '🏡', attraction: '🎡', restaurant: '🍽️'
+            bar: '🍹', hotel: '🛎️', b_and_b: '🏡', attraction: '🎡', restaurant: '🍽️'
         };
 
         function updateFavCount() { document.getElementById('favCount').innerText = favorites.length; }
         updateFavCount();
 
-        /* Google Sync Integration */
+        /* סנכרון מהיר בין נייד למחשב */
         function handleGoogleAuth() {
             if (googleUser) {
                 googleUser = null;
-                document.getElementById('googleBtnText').innerText = 'התחבר עם גוגל';
+                document.getElementById('googleBtnText').innerText = 'סנכרון נייד/מחשב';
                 alert('התנתקת בהצלחה.');
                 return;
             }
-            google.accounts.id.initialize({
-                client_id: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
-                callback: handleCredentialResponse
-            });
-            google.accounts.id.prompt();
-        }
 
-        async function handleCredentialResponse(response) {
-            const base64Url = response.credential.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const userObj = JSON.parse(window.atob(base64));
-            googleUser = userObj;
-            document.getElementById('googleBtnText').innerText = googleUser.given_name || 'מחובר';
-            await syncFavoritesWithCloud();
+            const email = prompt('הכנס כתובת Gmail / מזהה אישי לסנכרון מועדפים בין המכשירים שלך:');
+            if (email && email.includes('@')) {
+                googleUser = { email: email, given_name: email.split('@')[0] };
+                document.getElementById('googleBtnText').innerText = googleUser.given_name;
+                syncFavoritesWithCloud();
+            }
         }
 
         async function syncFavoritesWithCloud() {
@@ -332,7 +328,7 @@
                 const res = await fetch('/api/user/sync', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: googleUser.sub, favorites: favorites })
+                    body: JSON.stringify({ userId: googleUser.email, favorites: favorites })
                 });
                 const data = await res.json();
                 if (data.favorites) {
@@ -341,7 +337,7 @@
                     updateFavCount();
                 }
             } catch (e) {
-                console.log('Cloud Sync active locally');
+                console.log('סנכרון ענן מוכן למשלוח');
             }
         }
 
@@ -440,14 +436,21 @@
                 ? `<img src="${place.photo_url}" class="place-img" alt="${place.name}">`
                 : `<div style="width:100%;height:100%;background:var(--control-bg);display:flex;align-items:center;justify-content:center;font-size:32px;">📍</div>`;
 
-            // להציג כפתור מחשבון רק למסעדות/ברים/קפה ולא למלונות/אטרקציות
+            // כפתור חשבון - רק למסעדות/ברים/קפה
             const isFoodCategory = !['hotel', 'b_and_b', 'attraction'].includes(place.genre || selectedGenre);
             const calcBtnHtml = isFoodCategory ? `<button class="btn-calc" onclick="openCalcModal('${place.name}')">🧮 חשבון</button>` : '';
+
+            // תג פתוח עכשיו / סגור עכשיו
+            const isOpen = place.open_now !== undefined ? place.open_now : true;
+            const statusHtml = isOpen 
+                ? `<div class="badge-status status-open">🟢 פתוח עכשיו</div>` 
+                : `<div class="badge-status status-closed">🔴 סגור עכשיו</div>`;
 
             return `
                 <div class="place-card">
                     <div class="img-container">
                         ${imgTag}
+                        ${statusHtml}
                         <button class="fav-btn" onclick="toggleFavorite('${encodedPlace}')">${isFav ? '❤️' : '🤍'}</button>
                         <div class="badge-score">🏆 ${place.combined_score}/100</div>
                     </div>
@@ -475,7 +478,7 @@
             fetchedPlacesList.sort((a, b) => {
                 if (sortBy === 'distance') return a.distance - b.distance;
                 if (sortBy === 'rating') return b.google_rating - a.google_rating;
-                return b.combined_score - a.combined_score; // 'score' (Default)
+                return b.combined_score - a.combined_score;
             });
 
             const resultsDiv = document.getElementById('results');
@@ -486,13 +489,15 @@
                 resultsDiv.innerHTML = '';
                 fetchedPlacesList.forEach(place => {
                     const emoji = icons[selectedGenre] || icons.restaurant;
+                    const statusTxt = (place.open_now !== false) ? '🟢 פתוח עכשיו' : '🔴 סגור עכשיו';
                     const resMarker = L.marker([place.lat, place.lng], { icon: createEmojiIcon(emoji) })
                         .addTo(map)
                         .bindPopup(`
                             <div style="text-align:right; font-family:'Heebo',sans-serif;">
                                 <h4 style="margin:0 0 4px 0; color:#0f172a;">${place.name}</h4>
                                 <p style="margin:0; font-size:12px; color:#64748b;">${place.address}</p>
-                                <p style="margin:4px 0 0 0; font-size:12px; font-weight:bold; color:#00c2e8;">🏆 מדד סביבי: ${place.combined_score}/100</p>
+                                <p style="margin:4px 0 0 0; font-size:11px; font-weight:bold;">${statusTxt}</p>
+                                <p style="margin:2px 0 0 0; font-size:12px; font-weight:bold; color:#00c2e8;">🏆 מדד סביבי: ${place.combined_score}/100</p>
                                 <a href="${place.maps_url}" target="_blank" style="display:inline-block; margin-top:6px; font-size:12px; color:#2563eb; font-weight:bold;">🧭 נווט בגוגל מפות</a>
                             </div>
                         `);
